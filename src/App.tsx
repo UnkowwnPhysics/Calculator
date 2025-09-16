@@ -17,7 +17,7 @@ const App: React.FC = () => {
         <Route path="/basic-calculator" element={<BasicCalculator />} /> {/* Adicione esta rota */}
         {/* Rota padrão para qualquer caminho inválido */}
         <Route path="/scientific-calculator" element={<ScientificCalculator />} />
-        <Route path="/
+        <Route path="/matrix-calculator" element={<Matrix />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
