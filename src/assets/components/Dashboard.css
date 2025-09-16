@@ -1,0 +1,94 @@
+.dashboard-container {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Welcome em cima, caixas mais embaixo */
+  padding-top: 60px; /* espaçamento do topo */
+}
+
+/* Perfil no canto superior direito */
+.profile-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.profile-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #2196F3;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px;
+  min-width: 100px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: #E91E63;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.logout-btn:hover {
+  background: #d81b60;
+}
+
+/* Welcome maior e no topo */
+.welcome-text {
+  font-size: 48px;
+  font-weight: 400;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 80px; /* aumenta o espaço entre Welcome e caixas */
+}
+
+/* Grid de caixas */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 25px;
+  justify-content: start; /* caixas da segunda linha abaixo dos espaços da primeira linha */
+  row-gap: 20px;
+}
+
+.feature-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 120px;
+}
+
+.feature-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+}
+
+/* Segunda linha: caixas ficam abaixo da primeira linha naturalmente */

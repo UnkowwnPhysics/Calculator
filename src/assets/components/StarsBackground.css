@@ -1,0 +1,42 @@
+.stars-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #02020a, #05051a);
+  overflow: hidden;
+  z-index: -1;
+}
+
+.star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  animation: twinkle linear infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.comet {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: comet linear infinite;
+}
+
+@keyframes comet {
+  0% {
+    transform: rotate(45deg) translateX(-100vw);
+    opacity: 0;
+  }
+  2% { opacity: 1; }
+  10% {
+    transform: rotate(45deg) translateX(100vw);
+    opacity: 0;
+  }
+  100% { opacity: 0; }
+}

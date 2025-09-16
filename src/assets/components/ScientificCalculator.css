@@ -1,0 +1,296 @@
+.scientific-calculator-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.scientific-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scientific-header h2 {
+  color: white;
+  margin: 0;
+  font-size: 1.8rem;
+  flex: 1;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.toggle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.toggle-btn:hover, .toggle-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+
+/* O restante do CSS permanece igual */
+.scientific-content {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+
+.scientific-calculator {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  flex: 1;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+}
+
+.calculator-display {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: right;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.calculator-input {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.2em;
+  min-height: 28px;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+}
+
+.calculator-result {
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+}
+
+.scientific-keypad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.keypad-row {
+  display: contents;
+}
+
+.scientific-key {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 40px;
+}
+
+.scientific-key:hover {
+  transform: scale(1.05);
+}
+
+.scientific-key:active {
+  transform: scale(0.95);
+}
+
+.number {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.number:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.operation {
+  background: rgba(255, 152, 0, 0.8);
+  color: white;
+}
+
+.operation:hover {
+  background: rgba(255, 152, 0, 1);
+}
+
+.function {
+  background: rgba(33, 150, 243, 0.8);
+  color: white;
+}
+
+.function:hover {
+  background: rgba(33, 150, 243, 1);
+}
+
+.equals {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+  grid-column: span 2;
+}
+
+.equals:hover {
+  background: rgba(76, 175, 80, 1);
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.panel h3 {
+  color: white;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+.history-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-panel li {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: white;
+  word-break: break-all;
+  font-family: 'Courier New', monospace;
+}
+
+.clear-history-btn {
+  background: rgba(233, 30, 99, 0.8);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.clear-history-btn:hover {
+  background: rgba(233, 30, 99, 1);
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.example-btn {
+  background: rgba(33, 150, 243, 0.8);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.9em;
+  font-family: 'Courier New', monospace;
+}
+
+.example-btn:hover {
+  background: rgba(33, 150, 243, 1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .scientific-content {
+    flex-direction: column;
+  }
+  
+  .panel {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .scientific-key {
+    padding: 10px;
+    font-size: 0.8em;
+  }
+
+  .header-buttons {
+    justify-content: flex-start;
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Scrollbar personalizada */
+.calculator-input::-webkit-scrollbar,
+.calculator-result::-webkit-scrollbar,
+.history-panel::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.calculator-input::-webkit-scrollbar-track,
+.calculator-result::-webkit-scrollbar-track,
+.history-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.calculator-input::-webkit-scrollbar-thumb,
+.calculator-result::-webkit-scrollbar-thumb,
+.history-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.calculator-input::-webkit-scrollbar-thumb:hover,
+.calculator-result::-webkit-scrollbar-thumb:hover,
+.history-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

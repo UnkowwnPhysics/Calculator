@@ -1,0 +1,127 @@
+.login-container {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  background: #f0f0f0;
+  padding: 40px;
+  border-radius: 20px;
+  width: 350px;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* CENTRALIZA O CONTEÚDO */
+}
+
+.welcome-text {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.input-field {
+  width: 100%;
+  max-width: 300px; /* deixa os campos uniformes e centralizados */
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center; /* CENTRALIZA OS BOTÕES */
+  gap: 10px; /* espaçamento entre Login e Sign Up */
+  margin-top: 10px;
+  width: 100%;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  flex: 1; /* faz os botões terem mesma largura */
+}
+
+.login-btn {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.signup-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.divider {
+  margin: 20px 0;
+  text-align: center;
+  position: relative;
+  width: 100%;
+}
+
+.divider span {
+  background: #f0f0f0;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: #aaa;
+  top: 50%;
+  left: 0;
+  z-index: 0;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px; /* centraliza os botões sociais */
+  align-items: center;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #888;
+  background: white;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.google-btn svg {
+  fill: #db4437;
+}
+
+.microsoft-btn svg {
+  fill: #0078d4;
+}
