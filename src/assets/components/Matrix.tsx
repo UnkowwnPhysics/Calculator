@@ -18,7 +18,6 @@ const MatrixCalculator: React.FC = () => {
   const [showExamples, setShowExamples] = useState(false);
   const navigate = useNavigate();
 
-  // Carregar histórico do localStorage ao inicializar
   useEffect(() => {
     const savedHistory = localStorage.getItem("matrixHistory");
     if (savedHistory) {
@@ -26,14 +25,13 @@ const MatrixCalculator: React.FC = () => {
     }
   }, []);
 
-  // Salvar histórico no localStorage sempre que mudar
   useEffect(() => {
     localStorage.setItem("matrixHistory", JSON.stringify(history));
   }, [history]);
 
   const updateMatrixSize = (matrix: Matrix, setMatrix: React.Dispatch<React.SetStateAction<Matrix>>, rows: number, cols: number) => {
     const newData: number[][] = [];
-    
+
     for (let i = 0; i < rows; i++) {
       newData[i] = [];
       for (let j = 0; j < cols; j++) {
@@ -44,15 +42,65 @@ const MatrixCalculator: React.FC = () => {
         }
       }
     }
-    
+
     setMatrix({ rows, cols, data: newData });
   };
 
   const updateMatrixValue = (matrix: Matrix, setMatrix: React.Dispatch<React.SetStateAction<Matrix>>, row: number, col: number, value: number) => {
-    const newData = matrix.data.map((r, i) => 
-      r.map((c, j) => (i === row && j === col) ? value : c)
+    const newData = matrix.data.map((r, i) =>
+      r.map((c, j) => (i === row && j === col ? value : c))
     );
     setMatrix({ ...matrix, data: newData });
+  };
+
+  const calculateDeterminant = (matrix: number[][]): number => {
+    if (matrix.length === 1) return matrix[0][0];
+    if (matrix.length === 2) {
+      return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+    }
+
+    let det = 0;
+    for (let i = 0; i < matrix.length; i++) {
+      const minor = matrix
+        .filter((_, idx) => idx !== 0)
+        .map((row) => row.filter((_, j) => j !== i));
+      det += matrix[0][i] * Math.pow(-1, i) * calculateDeterminant(minor);
+    }
+    return det;
+  };
+
+  const calculateInverse = (matrix: number[][], determinant: number): Matrix => {
+    if (matrix.length === 1) {
+      return { rows: 1, cols: 1, data: [[1 / matrix[0][0]]] };
+    }
+
+    if (matrix.length === 2) {
+      return {
+        rows: 2,
+        cols: 2,
+        data: [
+          [matrix[1][1] / determinant, -matrix[0][1] / determinant],
+          [-matrix[1][0] / determinant, matrix[0][0] / determinant],
+        ],
+      };
+    }
+
+    const cofactors: number[][] = [];
+
+    for (let i = 0; i < matrix.length; i++) {
+      cofactors[i] = [];
+      for (let j = 0; j < matrix.length; j++) {
+        const minor = matrix
+          .filter((_, idx) => idx !== i)
+          .map((row) => row.filter((_, k) => k !== j));
+        cofactors[i][j] = Math.pow(-1, i + j) * calculateDeterminant(minor);
+      }
+    }
+
+    const adjugate = cofactors[0].map((_, i) => cofactors.map((row) => row[i]));
+    const inverseData = adjugate.map((row) => row.map((val) => val / determinant));
+
+    return { rows: matrix.length, cols: matrix.length, data: inverseData };
   };
 
   const performOperation = () => {
@@ -68,11 +116,11 @@ const MatrixCalculator: React.FC = () => {
           operationResult = {
             rows: matrixA.rows,
             cols: matrixA.cols,
-            data: matrixA.data.map((row, i) => 
+            data: matrixA.data.map((row, i) =>
               row.map((val, j) => val + matrixB.data[i][j])
-            )
+            ),
           };
-          operationString = `Matrix A + Matrix B`;
+          operationString = "Matrix A + Matrix B";
           break;
 
         case "subtract":
@@ -82,11 +130,11 @@ const MatrixCalculator: React.FC = () => {
           operationResult = {
             rows: matrixA.rows,
             cols: matrixA.cols,
-            data: matrixA.data.map((row, i) => 
+            data: matrixA.data.map((row, i) =>
               row.map((val, j) => val - matrixB.data[i][j])
-            )
+            ),
           };
-          operationString = `Matrix A - Matrix B`;
+          operationString = "Matrix A - Matrix B";
           break;
 
         case "multiply":
@@ -96,9 +144,9 @@ const MatrixCalculator: React.FC = () => {
           operationResult = {
             rows: matrixA.rows,
             cols: matrixB.cols,
-            data: Array(matrixA.rows).fill(0).map(() => Array(matrixB.cols).fill(0))
+            data: Array(matrixA.rows).fill(0).map(() => Array(matrixB.cols).fill(0)),
           };
-          
+
           for (let i = 0; i < matrixA.rows; i++) {
             for (let j = 0; j < matrixB.cols; j++) {
               let sum = 0;
@@ -108,18 +156,18 @@ const MatrixCalculator: React.FC = () => {
               (operationResult as Matrix).data[i][j] = sum;
             }
           }
-          operationString = `Matrix A × Matrix B`;
+          operationString = "Matrix A × Matrix B";
           break;
 
         case "transpose":
           operationResult = {
             rows: matrixA.cols,
             cols: matrixA.rows,
-            data: Array(matrixA.cols).fill(0).map((_, i) => 
+            data: Array(matrixA.cols).fill(0).map((_, i) =>
               Array(matrixA.rows).fill(0).map((_, j) => matrixA.data[j][i])
-            )
+            ),
           };
-          operationString = `Transpose of Matrix A`;
+          operationString = "Transpose of Matrix A";
           break;
 
         case "determinant":
@@ -127,19 +175,19 @@ const MatrixCalculator: React.FC = () => {
             throw new Error("Matrix must be square to calculate determinant");
           }
           operationResult = calculateDeterminant(matrixA.data);
-          operationString = `det(Matrix A)`;
+          operationString = "det(Matrix A)";
           break;
 
         case "inverse":
           if (matrixA.rows !== matrixA.cols) {
             throw new Error("Matrix must be square to calculate inverse");
           }
-          const det = calculateDeterminant(matrixA.data);
-          if (det === 0) {
+          const determinantValue = calculateDeterminant(matrixA.data);
+          if (determinantValue === 0) {
             throw new Error("Matrix is singular (determinant = 0), inverse does not exist");
           }
-          operationResult = calculateInverse(matrixA.data, det);
-          operationString = `Inverse of Matrix A`;
+          operationResult = calculateInverse(matrixA.data, determinantValue);
+          operationString = "Inverse of Matrix A";
           break;
 
         default:
@@ -147,77 +195,29 @@ const MatrixCalculator: React.FC = () => {
       }
 
       setResult(operationResult);
-      
-      // Adicionar ao histórico
-      const newHistoryItem = `${operationString} = ${typeof operationResult === 'object' ? 
-        formatMatrix(operationResult as Matrix) : operationResult}`;
-      setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]); // Mantém apenas os últimos 10 itens
-    } catch (error: any) {
-      setResult(`Error: ${error.message}`);
-    }
-  };
 
-  const calculateDeterminant = (matrix: number[][]): number => {
-    if (matrix.length === 1) return matrix[0][0];
-    if (matrix.length === 2) {
-      return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+      const newHistoryItem = `${operationString} = ${
+        typeof operationResult === "object"
+          ? formatMatrix(operationResult as Matrix)
+          : operationResult
+      }`;
+      setHistory((prev) => [newHistoryItem, ...prev.slice(0, 9)]);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      setResult(`Error: ${errorMessage}`);
     }
-    
-    let det = 0;
-    for (let i = 0; i < matrix.length; i++) {
-      const minor = matrix.filter((_, idx) => idx !== 0)
-                         .map(row => row.filter((_, j) => j !== i));
-      det += matrix[0][i] * Math.pow(-1, i) * calculateDeterminant(minor);
-    }
-    return det;
-  };
-
-  const calculateInverse = (matrix: number[][], determinant: number): Matrix => {
-    if (matrix.length === 1) {
-      return { rows: 1, cols: 1, data: [[1 / matrix[0][0]]] };
-    }
-    
-    if (matrix.length === 2) {
-      return {
-        rows: 2,
-        cols: 2,
-        data: [
-          [matrix[1][1] / determinant, -matrix[0][1] / determinant],
-          [-matrix[1][0] / determinant, matrix[0][0] / determinant]
-        ]
-      };
-    }
-    
-    // For 3x3 and larger matrices, we use the adjugate method
-    const cofactors: number[][] = [];
-    
-    for (let i = 0; i < matrix.length; i++) {
-      cofactors[i] = [];
-      for (let j = 0; j < matrix.length; j++) {
-        const minor = matrix.filter((_, idx) => idx !== i)
-                           .map(row => row.filter((_, k) => k !== j));
-        cofactors[i][j] = Math.pow(-1, i + j) * calculateDeterminant(minor);
-      }
-    }
-    
-    // Transpose the cofactor matrix to get the adjugate
-    const adjugate = cofactors[0].map((_, i) => cofactors.map(row => row[i]));
-    
-    // Multiply by 1/determinant
-    const inverseData = adjugate.map(row => row.map(val => val / determinant));
-    
-    return { rows: matrix.length, cols: matrix.length, data: inverseData };
   };
 
   const formatMatrix = (matrix: Matrix): string => {
-    return matrix.data.map(row => `[${row.join(", ")}]`).join("; ");
+    return matrix.data.map((row) => `[${row.join(", ")}]`).join("; ");
   };
 
   const clearHistory = () => {
     setHistory([]);
   };
 
-  const handleExampleClick = (example: { a: Matrix, b: Matrix, op: string }) => {
+  const handleExampleClick = (example: { a: Matrix; b: Matrix; op: string }) => {
     setMatrixA(example.a);
     setMatrixB(example.b);
     setOperation(example.op);
@@ -229,46 +229,50 @@ const MatrixCalculator: React.FC = () => {
       description: "Add two 2x2 matrices",
       a: { rows: 2, cols: 2, data: [[1, 2], [3, 4]] },
       b: { rows: 2, cols: 2, data: [[5, 6], [7, 8]] },
-      op: "add"
+      op: "add",
     },
     {
       name: "Matrix Multiplication",
       description: "Multiply a 2x3 matrix by a 3x2 matrix",
       a: { rows: 2, cols: 3, data: [[1, 2, 3], [4, 5, 6]] },
       b: { rows: 3, cols: 2, data: [[7, 8], [9, 10], [11, 12]] },
-      op: "multiply"
+      op: "multiply",
     },
     {
       name: "Transpose",
       description: "Transpose a 3x2 matrix",
       a: { rows: 3, cols: 2, data: [[1, 2], [3, 4], [5, 6]] },
       b: { rows: 2, cols: 2, data: [[0, 0], [0, 0]] },
-      op: "transpose"
+      op: "transpose",
     },
     {
       name: "Determinant",
       description: "Calculate determinant of a 3x3 matrix",
       a: { rows: 3, cols: 3, data: [[1, 2, 3], [4, 5, 6], [7, 8, 9]] },
       b: { rows: 2, cols: 2, data: [[0, 0], [0, 0]] },
-      op: "determinant"
+      op: "determinant",
     },
     {
       name: "Inverse",
       description: "Calculate inverse of a 2x2 matrix",
       a: { rows: 2, cols: 2, data: [[4, 7], [2, 6]] },
       b: { rows: 2, cols: 2, data: [[0, 0], [0, 0]] },
-      op: "inverse"
+      op: "inverse",
     },
     {
       name: "Physics: Transformation",
       description: "Rotation matrix in 2D",
       a: { rows: 2, cols: 2, data: [[0.866, -0.5], [0.5, 0.866]] },
       b: { rows: 2, cols: 1, data: [[3], [4]] },
-      op: "multiply"
-    }
+      op: "multiply",
+    },
   ];
 
-  const renderMatrixInput = (matrix: Matrix, setMatrix: React.Dispatch<React.SetStateAction<Matrix>>, title: string) => (
+  const renderMatrixInput = (
+    matrix: Matrix,
+    setMatrix: React.Dispatch<React.SetStateAction<Matrix>>,
+    title: string
+  ) => (
     <div className="matrix-input">
       <h3>{title}</h3>
       <div className="matrix-size">
@@ -279,7 +283,9 @@ const MatrixCalculator: React.FC = () => {
             min="1"
             max="6"
             value={matrix.rows}
-            onChange={(e) => updateMatrixSize(matrix, setMatrix, parseInt(e.target.value), matrix.cols)}
+            onChange={(e) =>
+              updateMatrixSize(matrix, setMatrix, parseInt(e.target.value), matrix.cols)
+            }
           />
         </label>
         <label>
@@ -289,7 +295,9 @@ const MatrixCalculator: React.FC = () => {
             min="1"
             max="6"
             value={matrix.cols}
-            onChange={(e) => updateMatrixSize(matrix, setMatrix, matrix.rows, parseInt(e.target.value))}
+            onChange={(e) =>
+              updateMatrixSize(matrix, setMatrix, matrix.rows, parseInt(e.target.value))
+            }
           />
         </label>
       </div>
@@ -301,7 +309,9 @@ const MatrixCalculator: React.FC = () => {
                 key={j}
                 type="number"
                 value={value}
-                onChange={(e) => updateMatrixValue(matrix, setMatrix, i, j, parseFloat(e.target.value) || 0)}
+                onChange={(e) =>
+                  updateMatrixValue(matrix, setMatrix, i, j, parseFloat(e.target.value) || 0)
+                }
                 className="matrix-cell"
               />
             ))}
@@ -339,13 +349,13 @@ const MatrixCalculator: React.FC = () => {
   return (
     <div className="matrix-calculator-container">
       <div className="matrix-header">
-        <button className="back-button" onClick={() => navigate('/dashboard')}>
+        <button className="back-button" onClick={() => navigate("/dashboard")}>
           ← Back
         </button>
         <h2>Matrix Calculator</h2>
         <div className="header-buttons">
-          <button 
-            className={`toggle-btn ${showHistory ? 'active' : ''}`}
+          <button
+            className={`toggle-btn ${showHistory ? "active" : ""}`}
             onClick={() => {
               setShowHistory(!showHistory);
               setShowExamples(false);
@@ -353,8 +363,8 @@ const MatrixCalculator: React.FC = () => {
           >
             History
           </button>
-          <button 
-            className={`toggle-btn ${showExamples ? 'active' : ''}`}
+          <button
+            className={`toggle-btn ${showExamples ? "active" : ""}`}
             onClick={() => {
               setShowExamples(!showExamples);
               setShowHistory(false);
