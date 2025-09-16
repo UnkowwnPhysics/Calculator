@@ -1,11 +1,10 @@
 .matrix-calculator-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   display: flex;
   flex-direction: column;
   position: relative;
-  color: white;
 }
 
 .matrix-header {
@@ -84,7 +83,7 @@
 }
 
 .matrix-input {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   padding: 15px;
   flex: 1;
@@ -92,8 +91,8 @@
 }
 
 .matrix-input h3 {
+  color: white;
   margin-top: 0;
-  color: #ff9500;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 10px;
 }
@@ -108,7 +107,7 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
-  color: #cccccc;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .matrix-size input {
@@ -132,7 +131,7 @@
 }
 
 .matrix-cell {
-  width: 50px;
+  width: 60px;
   height: 40px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -140,11 +139,13 @@
   color: white;
   text-align: center;
   font-size: 1rem;
+  font-family: 'Courier New', monospace;
 }
 
 .matrix-cell:focus {
   outline: none;
-  border-color: #ff9500;
+  border-color: rgba(255, 152, 0, 0.8);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .result-cell {
@@ -152,18 +153,19 @@
   align-items: center;
   justify-content: center;
   background: rgba(76, 175, 80, 0.2);
+  font-weight: bold;
 }
 
 .operation-selector {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 20px;
 }
 
 .operation-selector h3 {
+  color: white;
   margin-top: 0;
-  color: #ff9500;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 10px;
 }
@@ -171,49 +173,58 @@
 .operation-selector select {
   width: 100%;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 5px;
-  color: white;
+  color: black;
   margin-bottom: 15px;
+  font-family: 'Courier New', monospace;
+}
+
+.operation-selector option {
+  color: black;
+  background: white;
 }
 
 .calculate-btn {
   width: 100%;
   padding: 12px;
-  background: #ff9500;
+  background: rgba(76, 175, 80, 0.8);
   border: none;
   border-radius: 8px;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
 }
 
 .calculate-btn:hover {
-  background: #ffaa33;
+  background: rgba(76, 175, 80, 1);
+  transform: scale(1.02);
 }
 
 .matrix-result {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   padding: 15px;
 }
 
 .matrix-result h3 {
+  color: white;
   margin-top: 0;
-  color: #4caf50;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 10px;
 }
 
 .result-text {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   padding: 15px;
   font-family: 'Courier New', monospace;
   font-size: 1.2rem;
-  color: #4caf50;
+  color: white;
+  text-align: center;
 }
 
 .panel {
@@ -259,6 +270,7 @@
   cursor: pointer;
   margin-bottom: 15px;
   width: 100%;
+  transition: all 0.3s ease;
 }
 
 .clear-history-btn:hover {
@@ -281,11 +293,12 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
 }
 
 .example-btn:hover {
   background: rgba(33, 150, 243, 1);
+  transform: scale(1.02);
 }
 
 .example-btn strong {
@@ -318,4 +331,38 @@
     margin-left: 0;
     width: 100%;
   }
+  
+  .matrix-cell {
+    width: 50px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Scrollbar personalizada */
+.matrix-cell::-webkit-scrollbar,
+.result-text::-webkit-scrollbar,
+.history-panel::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.matrix-cell::-webkit-scrollbar-track,
+.result-text::-webkit-scrollbar-track,
+.history-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.matrix-cell::-webkit-scrollbar-thumb,
+.result-text::-webkit-scrollbar-thumb,
+.history-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.matrix-cell::-webkit-scrollbar-thumb:hover,
+.result-text::-webkit-scrollbar-thumb:hover,
+.history-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
