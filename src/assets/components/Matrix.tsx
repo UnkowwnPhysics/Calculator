@@ -46,11 +46,49 @@ const MatrixCalculator: React.FC = () => {
     setMatrix({ rows, cols, data: newData });
   };
 
-  const updateMatrixValue = (matrix: Matrix, setMatrix: React.Dispatch<React.SetStateAction<Matrix>>, row: number, col: number, value: number) => {
+  const evaluateExpression = (expr: string): number => {
+    try {
+      // Substituir vírgulas por pontos para aceitar ambos os formatos
+      const normalizedExpr = expr.replace(/,/g, '.');
+      
+      // Avaliar expressões matemáticas simples
+      if (normalizedExpr.includes('/') || normalizedExpr.includes('*') || 
+          normalizedExpr.includes('+') || normalizedExpr.includes('-') ||
+          normalizedExpr.includes('(') || normalizedExpr.includes(')')) {
+        // Usar Function constructor para evitar warnings do eval em strict mode
+        return Function(`"use strict"; return (${normalizedExpr})`)();
+      }
+      
+      return parseFloat(normalizedExpr) || 0;
+    } catch (error) {
+      return parseFloat(expr) || 0;
+    }
+  };
+
+  const updateMatrixValue = (matrix: Matrix, setMatrix: React.Dispatch<React.SetStateAction<Matrix>>, row: number, col: number, value: string) => {
+    const numericValue = evaluateExpression(value);
+    
     const newData = matrix.data.map((r, i) =>
-      r.map((c, j) => (i === row && j === col ? value : c))
+      r.map((c, j) => (i === row && j === col) ? numericValue : c)
     );
     setMatrix({ ...matrix, data: newData });
+  };
+
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    // Selecionar todo o texto quando o input recebe foco
+    event.target.select();
+    
+    // Se o valor for 0, limpar o campo
+    if (event.target.value === "0") {
+      event.target.value = "";
+    }
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>, matrix: Matrix, setMatrix: React.Dispatch<React.SetStateAction<Matrix>>, row: number, col: number) => {
+    // Se o campo estiver vazio, definir como 0
+    if (event.target.value === "") {
+      updateMatrixValue(matrix, setMatrix, row, col, "0");
+    }
   };
 
   const calculateDeterminant = (matrix: number[][]): number => {
@@ -307,11 +345,13 @@ const MatrixCalculator: React.FC = () => {
             {row.map((value, j) => (
               <input
                 key={j}
-                type="number"
+                type="text"
                 value={value}
                 onChange={(e) =>
-                  updateMatrixValue(matrix, setMatrix, i, j, parseFloat(e.target.value) || 0)
+                  updateMatrixValue(matrix, setMatrix, i, j, e.target.value)
                 }
+                onFocus={handleFocus}
+                onBlur={(e) => handleBlur(e, matrix, setMatrix, i, j)}
                 className="matrix-cell"
               />
             ))}
@@ -350,7 +390,7 @@ const MatrixCalculator: React.FC = () => {
     <div className="matrix-calculator-container">
       <div className="matrix-header">
         <button className="back-button" onClick={() => navigate("/dashboard")}>
-          ← Back to Dashboard
+          ← Back to dashboard
         </button>
         <div className="header-buttons">
           <button
