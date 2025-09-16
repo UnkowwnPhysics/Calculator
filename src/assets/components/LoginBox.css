@@ -8,7 +8,7 @@
 }
 
 .login-box {
-  background: #f0f0f0;
+  background: #494343;
   padding: 40px;
   border-radius: 20px;
   width: 350px;
@@ -125,3 +125,4 @@
 .microsoft-btn svg {
   fill: #0078d4;
 }
+
