@@ -18,16 +18,6 @@ const Dashboard: React.FC = () => {
       path: "/scientific-calculator"
     },
     { 
-      title: "Basic Calculator", 
-      color: "rgba(76, 175, 80, 0.8)",
-      path: "/basic-calculator"
-    },
-    { 
-      title: "Scientific Calculator", 
-      color: "rgba(33, 150, 243, 0.8)",
-      path: "/scientific-calculator"
-    },
-    { 
       title: "Matrix Calculator", 
       color: "rgba(255, 152, 0, 0.8)",
       path: "/matrix-calculator"
@@ -89,5 +79,6 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
+
 
 export default Dashboard;
