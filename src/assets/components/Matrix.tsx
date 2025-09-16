@@ -350,9 +350,8 @@ const MatrixCalculator: React.FC = () => {
     <div className="matrix-calculator-container">
       <div className="matrix-header">
         <button className="back-button" onClick={() => navigate("/dashboard")}>
-          ← Back
+          ← Back to Dashboard
         </button>
-        <h2>Matrix Calculator</h2>
         <div className="header-buttons">
           <button
             className={`toggle-btn ${showHistory ? "active" : ""}`}
