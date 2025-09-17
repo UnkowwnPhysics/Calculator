@@ -8,6 +8,7 @@ const ScientificCalculator: React.FC = () => {
   const [history, setHistory] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Carregar histórico do localStorage ao inicializar
@@ -25,29 +26,7 @@ const ScientificCalculator: React.FC = () => {
 
   const handleButtonClick = (value: string) => {
     if (value === "=") {
-      try {
-        // Usar a biblioteca Math para funções científicas
-        const processedInput = input
-          .replace(/π/g, "Math.PI")
-          .replace(/e/g, "Math.E")
-          .replace(/sin\(/g, "Math.sin(")
-          .replace(/cos\(/g, "Math.cos(")
-          .replace(/tan\(/g, "Math.tan(")
-          .replace(/log\(/g, "Math.log10(")
-          .replace(/ln\(/g, "Math.log(")
-          .replace(/sqrt\(/g, "Math.sqrt(")
-          .replace(/\^/g, "**")
-          .replace(/abs\(/g, "Math.abs(");
-
-        const calculationResult = eval(processedInput).toString();
-        setResult(calculationResult);
-        
-        // Adicionar ao histórico
-        const newHistoryItem = `${input} = ${calculationResult}`;
-        setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]); // Mantém apenas os últimos 10 itens
-      } catch {
-        setResult("Error");
-      }
+      calculateExpression();
     } else if (value === "C") {
       setInput("");
       setResult("");
@@ -65,13 +44,52 @@ const ScientificCalculator: React.FC = () => {
       setInput("e^");
     } else if (value === "exp") {
       setInput(input + "exp(");
+    } else if (value === "±") {
+      if (input.startsWith("-")) {
+        setInput(input.substring(1));
+      } else {
+        setInput("-" + input);
+      }
     } else {
       setInput(input + value);
     }
   };
 
+  const calculateExpression = async () => {
+    if (!input) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch("https://calculator-b9q5.onrender.com/calculate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expression: input }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        const calculationResult = data.result.toString();
+        setResult(calculationResult);
+        
+        // Adicionar ao histórico
+        const newHistoryItem = `${input} = ${calculationResult}`;
+        setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]); // Mantém apenas os últimos 10 itens
+      } else {
+        setResult("Error: " + data.error);
+      }
+    } catch (error) {
+      setResult("Network Error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleExampleClick = (example: string) => {
     setInput(example);
+    setResult("");
   };
 
   const clearHistory = () => {
@@ -135,7 +153,9 @@ const ScientificCalculator: React.FC = () => {
         <div className="scientific-calculator">
           <div className="calculator-display">
             <div className="calculator-input">{input}</div>
-            <div className="calculator-result">{result}</div>
+            <div className="calculator-result">
+              {loading ? "Calculating..." : result}
+            </div>
           </div>
 
           <div className="scientific-keypad">
@@ -151,6 +171,7 @@ const ScientificCalculator: React.FC = () => {
                       "operation"
                     }`}
                     onClick={() => handleButtonClick(btn)}
+                    disabled={btn === "=" && loading}
                   >
                     {btn}
                   </button>
