@@ -23,9 +23,23 @@ class LoginRequest(BaseModel):
 class CalculationRequest(BaseModel):
     expression: str
 
+# Novas funções trigonométricas com tolerância
+def safe_sin(x):
+    result = math.sin(x)
+    return 0.0 if abs(result) < 1e-10 else result
+
+def safe_cos(x):
+    result = math.cos(x)
+    return 0.0 if abs(result) < 1e-10 else result
+
+def safe_tan(x):
+    result = math.tan(x)
+    return 0.0 if abs(result) < 1e-10 else result
+
 def safe_eval(expression):
     """
     Avalia uma expressão matemática de forma segura e trata valores muito próximos de zero
+    apenas para funções trigonométricas.
     """
     # Substituir símbolos e funções
     expression = expression.replace("π", str(math.pi))
@@ -34,21 +48,26 @@ def safe_eval(expression):
     expression = expression.replace("^", "**")
     expression = expression.replace("√", "math.sqrt")
     
-    # Substituir funções trigonométricas
-    expression = re.sub(r'sin\(', 'math.sin(', expression)
-    expression = re.sub(r'cos\(', 'math.cos(', expression)
-    expression = re.sub(r'tan\(', 'math.tan(', expression)
+    # Substituir funções trigonométricas por nossas versões seguras
+    expression = re.sub(r'sin\(', 'safe_sin(', expression)
+    expression = re.sub(r'cos\(', 'safe_cos(', expression)
+    expression = re.sub(r'tan\(', 'safe_tan(', expression)
     expression = re.sub(r'log\(', 'math.log10(', expression)
     expression = re.sub(r'ln\(', 'math.log(', expression)
     expression = re.sub(r'abs\(', 'math.fabs(', expression)
     expression = re.sub(r'exp\(', 'math.exp(', expression)
     
-    # Avaliar a expressão com math disponível
-    result = eval(expression, {"math": math, "__builtins__": {}})
+    # Dicionário de funções e constantes permitidas
+    allowed = {
+        "math": math,
+        "safe_sin": safe_sin,
+        "safe_cos": safe_cos,
+        "safe_tan": safe_tan,
+        "__builtins__": {}
+    }
     
-    # Arredondar valores muito próximos de zero para zero
-    if abs(result) < 1e-10:
-        result = 0
+    # Avaliar a expressão
+    result = eval(expression, allowed)
     
     return result
 
