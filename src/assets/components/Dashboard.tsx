@@ -32,6 +32,11 @@ const Dashboard: React.FC = () => {
       color: "rgba(233, 30, 99, 0.8)",
       path: "/quadratic-solver"
     },
+    { 
+      title: "Graphing Calculator", 
+      color: "rgba(120, 83, 154, 0.8)",
+      path: "/graphing-calculator"
+    },
   ];
 
   const handleLogout = () => {
@@ -82,3 +87,4 @@ const Dashboard: React.FC = () => {
 
 
 export default Dashboard;
+
