@@ -1,128 +1,107 @@
-.login-container {
-  position: relative;
-  z-index: 1;
-  height: 100vh;
+.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle, #0b0c24, #1a1b36);
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.login-box {
-  background: #494343;
-  padding: 40px;
-  border-radius: 20px;
-  width: 350px;
-  max-width: 90%;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+.login-card {
+  background: #2c2c2e;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  width: 380px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* CENTRALIZA O CONTEÚDO */
+  color: #fff;
 }
 
-.welcome-text {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
+.login-card h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
 }
 
-.input-field {
+.login-card input {
   width: 100%;
-  max-width: 300px; /* deixa os campos uniformes e centralizados */
-  padding: 12px 15px;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-.error-text {
-  color: red;
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-
-.button-group {
-  display: flex;
-  justify-content: center; /* CENTRALIZA OS BOTÕES */
-  gap: 10px; /* espaçamento entre Login e Sign Up */
-  margin-top: 10px;
-  width: 100%;
-}
-
-.btn {
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
   border: none;
-  flex: 1; /* faz os botões terem mesma largura */
+  outline: none;
+  font-size: 1rem;
+}
+
+.login-card input:focus {
+  box-shadow: 0 0 0 2px #4a90e2;
+}
+
+.error {
+  color: #ff6b6b;
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .login-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
   background-color: #4a90e2;
-  color: white;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-.signup-btn {
-  background-color: #ccc;
-  color: #333;
+.login-btn:hover {
+  background-color: #3578c0;
 }
 
 .divider {
-  margin: 20px 0;
+  display: flex;
+  align-items: center;
   text-align: center;
-  position: relative;
-  width: 100%;
+  margin: 1.5rem 0;
+  color: #aaa;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #555;
 }
 
 .divider span {
-  background: #f0f0f0;
-  padding: 0 10px;
-  position: relative;
-  z-index: 1;
+  margin: 0 0.5rem;
 }
 
-.divider::before {
-  content: "";
-  position: absolute;
+.social-buttons button {
   width: 100%;
-  height: 1px;
-  background: #aaa;
-  top: 50%;
-  left: 0;
-  z-index: 0;
-}
-
-.social-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  max-width: 300px; /* centraliza os botões sociais */
-  align-items: center;
-}
-
-.social-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #888;
-  background: white;
-  font-weight: bold;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
-  width: 100%;
+  font-weight: 500;
 }
 
-.google-btn svg {
-  fill: #db4437;
+.google-btn {
+  background-color: #fff;
+  color: #444;
 }
 
-.microsoft-btn svg {
-  fill: #0078d4;
+.google-btn:hover {
+  background-color: #e6e6e6;
 }
 
+.microsoft-btn {
+  background-color: #0078d4;
+  color: #fff;
+}
+
+.microsoft-btn:hover {
+  background-color: #005a9e;
+}
