@@ -1,14 +1,13 @@
 const handleLogin = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  // Verifica se é um email válido
   if (!email.includes("@")) {
     setError("Please enter a valid email address.");
     return;
   }
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/login", {
+    const response = await fetch("https://calculator-b9q5.onrender.com/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
