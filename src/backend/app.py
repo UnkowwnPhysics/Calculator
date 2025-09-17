@@ -1,12 +1,17 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from loginbox import login_bp
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-app = Flask(__name__)
-CORS(app)  # Permite requisições do frontend
+app = FastAPI()
 
-# Registra o blueprint de autenticação
-app.register_blueprint(login_bp)
+# Modelo do request
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+@app.post("/login")
+def login(req: LoginRequest):
+    # Exemplo fixo (igual ao que você tinha no TSX)
+    if req.email == "teste@gmail.com" and req.password == "123":
+        return {"success": True, "user": {"name": "Test User", "email": req.email}}
+    else:
+        return {"success": False, "error": "Incorrect email or password."}
