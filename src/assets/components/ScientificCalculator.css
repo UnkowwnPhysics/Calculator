@@ -59,8 +59,6 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-
-/* O restante do CSS permanece igual */
 .scientific-content {
   display: flex;
   gap: 20px;
@@ -74,13 +72,13 @@
   padding: 20px;
   flex: 1;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  max-width: 500px;
+  max-width: 600px; /* Aumentado para acomodar 6 colunas */
 }
 
 .calculator-display {
   background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
-  padding: 20px;
+  padding: 15px;
   margin-bottom: 20px;
   text-align: right;
   min-height: 100px;
@@ -89,13 +87,23 @@
   justify-content: space-between;
 }
 
-.calculator-input {
+.calculator-input-field {
+  width: 100%;
+  background: transparent;
+  border: none;
   color: rgba(255, 255, 255, 0.8);
   font-size: 1.2em;
-  min-height: 28px;
-  overflow-x: auto;
-  white-space: nowrap;
   font-family: 'Courier New', monospace;
+  outline: none;
+  text-align: right;
+  padding: 5px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom 0.3s ease;
+}
+
+.calculator-input-field:focus {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 .calculator-result {
@@ -105,11 +113,12 @@
   overflow-x: auto;
   white-space: nowrap;
   font-family: 'Courier New', monospace;
+  min-height: 40px;
 }
 
 .scientific-keypad {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr); /* 6 colunas para acomodar o botão "i" */
   gap: 8px;
 }
 
@@ -173,6 +182,15 @@
   background: rgba(76, 175, 80, 1);
 }
 
+.complex {
+  background: rgba(156, 39, 176, 0.8);
+  color: white;
+}
+
+.complex:hover {
+  background: rgba(156, 39, 176, 1);
+}
+
 .panel {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -205,6 +223,12 @@
   color: white;
   word-break: break-all;
   font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.history-panel li:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .clear-history-btn {
@@ -238,10 +262,22 @@
   text-align: center;
   font-size: 0.9em;
   font-family: 'Courier New', monospace;
+  transition: all 0.2s;
 }
 
 .example-btn:hover {
   background: rgba(33, 150, 243, 1);
+  transform: translateY(-2px);
+}
+
+.keyboard-hint {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 15px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
 }
 
 /* Responsividade */
@@ -265,32 +301,83 @@
     margin-left: 0;
     width: 100%;
   }
+
+  .scientific-keypad {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .scientific-keypad {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .calculator-input-field {
+    font-size: 1em;
+  }
+  
+  .calculator-result {
+    font-size: 1.5em;
+  }
 }
 
 /* Scrollbar personalizada */
-.calculator-input::-webkit-scrollbar,
+.calculator-input-field::-webkit-scrollbar,
 .calculator-result::-webkit-scrollbar,
 .history-panel::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-.calculator-input::-webkit-scrollbar-track,
+.calculator-input-field::-webkit-scrollbar-track,
 .calculator-result::-webkit-scrollbar-track,
 .history-panel::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
-.calculator-input::-webkit-scrollbar-thumb,
+.calculator-input-field::-webkit-scrollbar-thumb,
 .calculator-result::-webkit-scrollbar-thumb,
 .history-panel::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
 }
 
-.calculator-input::-webkit-scrollbar-thumb:hover,
+.calculator-input-field::-webkit-scrollbar-thumb:hover,
 .calculator-result::-webkit-scrollbar-thumb:hover,
 .history-panel::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.calculator-result {
+  animation: fadeIn 0.3s ease;
+}
+
+.loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
