@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ScientificCalculator.css";
 
@@ -9,6 +9,7 @@ const ScientificCalculator: React.FC = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   // Carregar histórico do localStorage ao inicializar
@@ -17,12 +18,48 @@ const ScientificCalculator: React.FC = () => {
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory));
     }
+    
+    // Focar no input quando o componente montar
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
 
   // Salvar histórico no localStorage sempre que mudar
   useEffect(() => {
     localStorage.setItem("calcHistory", JSON.stringify(history));
   }, [history]);
+
+  // Manipular pressionamento de teclas
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key >= '0' && e.key <= '9') {
+        setInput(prev => prev + e.key);
+      } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+        setInput(prev => prev + e.key);
+      } else if (e.key === '.') {
+        setInput(prev => prev + '.');
+      } else if (e.key === 'Enter') {
+        calculateExpression();
+      } else if (e.key === 'Backspace') {
+        setInput(prev => prev.slice(0, -1));
+      } else if (e.key === 'Escape') {
+        setInput("");
+        setResult("");
+      } else if (e.key === '(' || e.key === ')') {
+        setInput(prev => prev + e.key);
+      } else if (e.key === '^') {
+        setInput(prev => prev + '^');
+      } else if (e.key === 'i' || e.key === 'I') {
+        setInput(prev => prev + 'i');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleButtonClick = (value: string) => {
     if (value === "=") {
@@ -50,8 +87,15 @@ const ScientificCalculator: React.FC = () => {
       } else {
         setInput("-" + input);
       }
+    } else if (value === "i") {
+      setInput(input + "i");
     } else {
       setInput(input + value);
+    }
+    
+    // Manter o foco no input após clicar em um botão
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
 
@@ -90,20 +134,29 @@ const ScientificCalculator: React.FC = () => {
   const handleExampleClick = (example: string) => {
     setInput(example);
     setResult("");
+    
+    // Focar no input após selecionar um exemplo
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const clearHistory = () => {
     setHistory([]);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
   const scientificButtons = [
     ["sin", "cos", "tan", "log", "ln"],
-    ["π", "e", "x²", "xʸ", "√"],
-    ["(", ")", "←", "C", "CE"],
-    ["7", "8", "9", "/", "±"],
-    ["4", "5", "6", "*", "abs"],
-    ["1", "2", "3", "-", "exp"],
-    ["0", ".", "=", "+", "10ˣ"]
+    ["π", "e", "x²", "xʸ", "√", "i"],
+    ["(", ")", "←", "C", "CE", "±"],
+    ["7", "8", "9", "/", "abs"],
+    ["4", "5", "6", "*", "exp"],
+    ["1", "2", "3", "-", "10ˣ"],
+    ["0", ".", "=", "+", "eˣ"]
   ];
 
   const examples = [
@@ -116,7 +169,10 @@ const ScientificCalculator: React.FC = () => {
     "abs(-5)",
     "3*π",
     "log(10)+ln(e)",
-    "sin(30*π/180)"
+    "sin(30*π/180)",
+    "2+3i",
+    "(2+3i)*(1-2i)",
+    "e^(i*π)"
   ];
 
   return (
@@ -152,7 +208,14 @@ const ScientificCalculator: React.FC = () => {
         {/* Calculator */}
         <div className="scientific-calculator">
           <div className="calculator-display">
-            <div className="calculator-input">{input}</div>
+            <input
+              ref={inputRef}
+              type="text"
+              className="calculator-input"
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Type expression or use buttons"
+            />
             <div className="calculator-result">
               {loading ? "Calculating..." : result}
             </div>
