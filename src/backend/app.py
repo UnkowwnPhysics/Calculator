@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from loginbox import validate_login
 import math
 import re
+import cmath
 
 app = FastAPI()
 
@@ -41,6 +42,9 @@ def safe_eval(expression):
     Avalia uma expressão matemática de forma segura e trata valores muito próximos de zero
     apenas para funções trigonométricas.
     """
+    # Verificar se a expressão contém números complexos
+    has_complex = re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression) or 'i' in expression or 'j' in expression
+    
     # Substituir símbolos e funções
     expression = expression.replace("π", str(math.pi))
     expression = expression.replace("e", str(math.e))
@@ -66,8 +70,37 @@ def safe_eval(expression):
         "__builtins__": {}
     }
     
+    # Se houver números complexos, usar cmath
+    if has_complex:
+        # Substituir i e j por 1j para números complexos
+        expression = re.sub(r'(\d*)\s*([ij])', r'\1*1j', expression)
+        expression = expression.replace('*1j*1j', '*1j')  # Corrigir casos como 2i -> 2*1j
+        allowed["cmath"] = cmath
+        allowed["abs"] = abs  # abs funciona com complexos
+    
     # Avaliar a expressão
     result = eval(expression, allowed)
+    
+    # Formatando o resultado para números complexos
+    if has_complex and isinstance(result, complex):
+        # Simplificar representação
+        real = result.real
+        imag = result.imag
+        
+        # Aplicar tolerância para partes muito pequenas
+        if abs(real) < 1e-10:
+            real = 0
+        if abs(imag) < 1e-10:
+            imag = 0
+            
+        # Formatar a saída
+        if imag == 0:
+            result = real
+        elif real == 0:
+            result = f"{imag}i"
+        else:
+            sign = "+" if imag >= 0 else ""
+            result = f"{real}{sign}{imag}i"
     
     return result
 
