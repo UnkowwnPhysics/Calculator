@@ -73,6 +73,7 @@
   flex: 1;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   max-width: 600px;
+  box-sizing: border-box; /* Adicionado para incluir padding na largura total */
 }
 
 .calculator-display {
@@ -84,6 +85,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box; /* Garante que padding não aumente a largura */
 }
 
 .calculator-input-field {
@@ -96,7 +98,9 @@
   font-family: 'Courier New', monospace;
   outline: none;
   text-align: right;
-  caret-color: white; /* Cursor visível */
+  padding: 0 10px; /* Adicionado padding lateral */
+  box-sizing: border-box; /* Inclui padding na largura total */
+  caret-color: white;
 }
 
 .calculator-input-field::placeholder {
@@ -110,7 +114,8 @@
   text-align: right;
   margin-top: 10px;
   animation: fadeIn 0.3s ease;
-  min-height: 1.8em;
+  padding: 0 10px; /* Adicionado para alinhar com o input */
+  box-sizing: border-box;
 }
 
 .scientific-keypad {
@@ -118,6 +123,7 @@
   grid-template-columns: repeat(6, 1fr);
   gap: 10px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .keypad-row {
@@ -132,6 +138,7 @@
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
+  box-sizing: border-box;
 }
 
 .scientific-key:hover {
@@ -197,6 +204,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   overflow-y: auto;
   max-height: 600px;
+  box-sizing: border-box;
 }
 
 .panel h3 {
@@ -302,6 +310,12 @@
   .scientific-keypad {
     grid-template-columns: repeat(5, 1fr);
   }
+  
+  /* Ajuste para dispositivos móveis */
+  .calculator-input-field,
+  .calculator-result {
+    padding: 0 8px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -315,6 +329,12 @@
   
   .calculator-result {
     font-size: 1.5em;
+  }
+  
+  /* Ajuste para dispositivos móveis pequenos */
+  .calculator-input-field,
+  .calculator-result {
+    padding: 0 5px;
   }
 }
 
