@@ -78,7 +78,7 @@
 .calculator-display {
   background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
-  padding: 15px;
+  padding: 0;
   margin-bottom: 20px;
   text-align: right;
   min-height: 100px;
@@ -89,21 +89,20 @@
 
 .calculator-input-field {
   width: 100%;
-  background: transparent;
+  height: 60px;  /* ocupa bem a área */
+  background: rgba(0, 0, 0, 0.3); /* mesma cor do display */
   border: none;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.2em;
+  color: white;
+  font-size: 1.5em;
   font-family: 'Courier New', monospace;
   outline: none;
   text-align: right;
-  padding: 5px;
-  margin-bottom: 10px;
-  border-bottom: 2px solid transparent;
-  transition: border-bottom 0.3s ease;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-.calculator-input-field:focus {
-  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+.calculator-input-field::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .calculator-result {
@@ -114,6 +113,7 @@
   white-space: nowrap;
   font-family: 'Courier New', monospace;
   min-height: 40px;
+  margin-top: 10px;
 }
 
 .scientific-keypad {
@@ -381,3 +381,4 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
