@@ -30,24 +30,29 @@ const ScientificCalculator: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    const cursorPosition = e.target.selectionStart;
+    
     setInput(newValue);
 
     // Verificar se o usuário acabou de digitar uma função matemática
-    const cursorPosition = e.target.selectionStart;
-    
     mathFunctions.forEach(func => {
+      // Verifica se a função foi digitada e se o cursor está no final
       if (newValue.endsWith(func) && cursorPosition === newValue.length) {
-        // Adicionar parênteses após a função
-        const updatedValue = newValue + "()";
-        setInput(updatedValue);
-        
-        // Posicionar o cursor entre os parênteses
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.selectionStart = cursorPosition + func.length + 1;
-            inputRef.current.selectionEnd = cursorPosition + func.length + 1;
-          }
-        }, 0);
+        // Usamos requestAnimationFrame para garantir que o DOM foi atualizado
+        requestAnimationFrame(() => {
+          const updatedValue = newValue + "()";
+          setInput(updatedValue);
+          
+          // Agora usamos um timeout para garantir que o input foi atualizado
+          setTimeout(() => {
+            if (inputRef.current) {
+              // Posiciona o cursor entre os parênteses
+              const newCursorPosition = cursorPosition + func.length + 1;
+              inputRef.current.selectionStart = newCursorPosition;
+              inputRef.current.selectionEnd = newCursorPosition;
+            }
+          }, 10);
+        });
       }
     });
   };
@@ -77,10 +82,8 @@ const ScientificCalculator: React.FC = () => {
       setResult("");
     } else if (value === "←") {
       if (start === end && start > 0) {
-        // Delete one character at cursor position
         const newInput = input.substring(0, start - 1) + input.substring(end);
         setInput(newInput);
-        // Move cursor back by one
         setTimeout(() => {
           if (inputEl) {
             inputEl.selectionStart = start - 1;
@@ -88,10 +91,8 @@ const ScientificCalculator: React.FC = () => {
           }
         }, 0);
       } else if (start !== end) {
-        // Delete selected text
         const newInput = input.substring(0, start) + input.substring(end);
         setInput(newInput);
-        // Keep cursor at deletion start position
         setTimeout(() => {
           if (inputEl) {
             inputEl.selectionStart = start;
@@ -112,12 +113,10 @@ const ScientificCalculator: React.FC = () => {
     } else if (value === "exp") {
       insertTextAtCursor("exp(");
     } else if (value === "±") {
-      // Toggle sign - simple implementation for start of expression
       setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
     } else if (value === "i") {
       insertTextAtCursor("i");
     } else if (mathFunctions.includes(value)) {
-      // Para funções matemáticas, insere com parênteses
       insertFunctionWithParentheses(value);
     } else {
       insertTextAtCursor(value);
@@ -134,7 +133,6 @@ const ScientificCalculator: React.FC = () => {
     const newInput = input.substring(0, start) + text + input.substring(end);
     setInput(newInput);
     
-    // Move cursor to the end of inserted text
     setTimeout(() => {
       if (inputEl) {
         const newPos = start + text.length;
@@ -154,7 +152,6 @@ const ScientificCalculator: React.FC = () => {
     const newInput = input.substring(0, start) + func + "()" + input.substring(end);
     setInput(newInput);
     
-    // Posiciona o cursor dentro dos parênteses
     setTimeout(() => {
       if (inputEl) {
         const newPos = start + func.length + 1;
@@ -190,19 +187,12 @@ const ScientificCalculator: React.FC = () => {
   };
 
   const scientificButtons = [
-    // Funções principais
     ["sin", "cos", "tan", "asin", "acos", "atan"],
     ["sinh", "cosh", "tanh", "log", "ln", "√"],
-
-    // Constantes e especiais
     ["π", "e", "exp"],
-
-    // Operações
     ["(", ")", "←", "C", "CE", "±"],
     ["abs", "x²", "xʸ", "10ˣ", "eˣ", "/"],
     ["*", "-", "+", ".", ",", "="],
-
-    // Números
     ["1", "2", "3", "4", "5", "6"],
     ["7", "8", "9", "0"],
   ];
