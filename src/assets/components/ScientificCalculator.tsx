@@ -22,50 +22,97 @@ const ScientificCalculator: React.FC = () => {
     localStorage.setItem("calcHistory", JSON.stringify(history));
   }, [history]);
 
-  // Teclado só trata ENTER, ESC, BACKSPACE
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        calculateExpression();
-      } else if (e.key === "Escape") {
-        setInput("");
-        setResult("");
-      } else if (e.key === "Backspace") {
-        setInput((prev) => prev.slice(0, -1));
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      calculateExpression();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setInput("");
+      setResult("");
+    }
+  };
 
   const handleButtonClick = (value: string) => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+
+    const start = inputEl.selectionStart || 0;
+    const end = inputEl.selectionEnd || 0;
+    
     if (value === "=") {
       calculateExpression();
     } else if (value === "C") {
       setInput("");
       setResult("");
     } else if (value === "←") {
-      setInput(input.slice(0, -1));
+      if (start === end && start > 0) {
+        // Delete one character at cursor position
+        const newInput = input.substring(0, start - 1) + input.substring(end);
+        setInput(newInput);
+        // Move cursor back by one
+        setTimeout(() => {
+          if (inputEl) {
+            inputEl.selectionStart = start - 1;
+            inputEl.selectionEnd = start - 1;
+          }
+        }, 0);
+      } else if (start !== end) {
+        // Delete selected text
+        const newInput = input.substring(0, start) + input.substring(end);
+        setInput(newInput);
+        // Keep cursor at deletion start position
+        setTimeout(() => {
+          if (inputEl) {
+            inputEl.selectionStart = start;
+            inputEl.selectionEnd = start;
+          }
+        }, 0);
+      }
     } else if (value === "CE") {
       setInput("");
     } else if (value === "x²") {
-      setInput(input + "²");
+      insertTextAtCursor("²");
     } else if (value === "xʸ") {
-      setInput(input + "^");
+      insertTextAtCursor("^");
     } else if (value === "10ˣ") {
-      setInput("10^");
+      insertTextAtCursor("10^");
     } else if (value === "eˣ") {
-      setInput("e^");
+      insertTextAtCursor("e^");
     } else if (value === "exp") {
-      setInput(input + "exp(");
+      insertTextAtCursor("exp(");
     } else if (value === "±") {
-      setInput(input.startsWith("-") ? input.substring(1) : "-" + input);
+      // Toggle sign - simple implementation for start of expression
+      setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
     } else if (value === "i") {
-      setInput(input + "i");
+      insertTextAtCursor("i");
     } else {
-      setInput(input + value);
+      insertTextAtCursor(value);
     }
-    if (inputRef.current) inputRef.current.focus();
+  };
+
+  const insertTextAtCursor = (text: string) => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+
+    const start = inputEl.selectionStart || 0;
+    const end = inputEl.selectionEnd || 0;
+    
+    const newInput = input.substring(0, start) + text + input.substring(end);
+    setInput(newInput);
+    
+    // Move cursor to the end of inserted text
+    setTimeout(() => {
+      if (inputEl) {
+        const newPos = start + text.length;
+        inputEl.selectionStart = newPos;
+        inputEl.selectionEnd = newPos;
+      }
+    }, 0);
   };
 
   const calculateExpression = async () => {
@@ -146,7 +193,8 @@ const ScientificCalculator: React.FC = () => {
               type="text"
               className="calculator-input-field"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               placeholder="Type expression..."
             />
             <div className="calculator-result">
@@ -226,7 +274,3 @@ const ScientificCalculator: React.FC = () => {
 };
 
 export default ScientificCalculator;
-
-
-
-
