@@ -107,7 +107,7 @@ const ScientificCalculator: React.FC = () => {
 
     // Números
     ["7", "8", "9", "4", "5", "6"],
-    ["1", "2", "3", "0", "00", "000"],
+    ["1", "2", "3", "0"],
   ];
 
   return (
@@ -227,3 +227,4 @@ const ScientificCalculator: React.FC = () => {
 };
 
 export default ScientificCalculator;
+
