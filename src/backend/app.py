@@ -72,6 +72,8 @@ def safe_eval(expression):
         "safe_sin": safe_sin,
         "safe_cos": safe_cos,
         "safe_tan": safe_tan,
+        "pi": math.pi,
+        "e": math.e,
         "__builtins__": {}
     }
 
@@ -116,4 +118,5 @@ async def options_login():
 @app.options("/calculate")
 async def options_calculate():
     return {"allow": "POST"}
+
 
