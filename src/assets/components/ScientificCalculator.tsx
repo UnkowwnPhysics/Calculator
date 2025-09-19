@@ -93,27 +93,48 @@ const ScientificCalculator: React.FC = () => {
   };
 
   const scientificButtons = [
-  // Funções primeiro
-    ["sin", "cos", "tan", "log", "ln", "π"],
-    ["e", "x²", "xʸ", "√", "i", "exp"],
+    // Funções principais
+    ["sin", "cos", "tan", "asin", "acos", "atan"],
+    ["sinh", "cosh", "tanh", "log", "ln", "√"],
 
-  // Operações (C, CE, etc.)
+    // Constantes e especiais
+    ["π", "e", "φ", "γ", "i", "exp"],
+
+    // Operações
     ["(", ")", "←", "C", "CE", "±"],
-    ["abs", "10ˣ", "eˣ", "/", "*", "-"],
+    ["abs", "x²", "xʸ", "10ˣ", "eˣ", "/"],
+    ["*", "-", "+", ".", ",", "="],
 
-  // Números por último
-    ["7", "8", "9", "+", ".", "="],
-    ["4", "5", "6", "0", "", ""],
-    ["1", "2", "3", "", "", ""],
+    // Números
+    ["7", "8", "9", "4", "5", "6"],
+    ["1", "2", "3", "0", "00", "000"],
   ];
 
   return (
     <div className="scientific-calculator-container">
       <div className="scientific-header">
-        <button className="back-button" onClick={() => navigate("/dashboard")}>← Back to Dashboard</button>
+        <button className="back-button" onClick={() => navigate("/dashboard")}>
+          ← Back to Dashboard
+        </button>
         <div className="header-buttons">
-          <button className={`toggle-btn ${showHistory ? "active" : ""}`} onClick={() => {setShowHistory(!showHistory); setShowExamples(false);}}>History</button>
-          <button className={`toggle-btn ${showExamples ? "active" : ""}`} onClick={() => {setShowExamples(!showExamples); setShowHistory(false);}}>Examples</button>
+          <button
+            className={`toggle-btn ${showHistory ? "active" : ""}`}
+            onClick={() => {
+              setShowHistory(!showHistory);
+              setShowExamples(false);
+            }}
+          >
+            History
+          </button>
+          <button
+            className={`toggle-btn ${showExamples ? "active" : ""}`}
+            onClick={() => {
+              setShowExamples(!showExamples);
+              setShowHistory(false);
+            }}
+          >
+            Examples
+          </button>
         </div>
       </div>
 
@@ -128,7 +149,9 @@ const ScientificCalculator: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type expression..."
             />
-            <div className="calculator-result">{loading ? "Calculating..." : result}</div>
+            <div className="calculator-result">
+              {loading ? "Calculating..." : result}
+            </div>
           </div>
 
           <div className="scientific-keypad">
@@ -138,9 +161,13 @@ const ScientificCalculator: React.FC = () => {
                   <button
                     key={btn}
                     className={`scientific-key ${
-                      btn === "=" ? "equals" :
-                      /\d/.test(btn) ? "number" :
-                      ["C", "CE", "←"].includes(btn) ? "function" : "operation"
+                      btn === "="
+                        ? "equals"
+                        : /\d/.test(btn)
+                        ? "number"
+                        : ["C", "CE", "←"].includes(btn)
+                        ? "function"
+                        : "operation"
                     }`}
                     onClick={() => handleButtonClick(btn)}
                     disabled={btn === "=" && loading}
@@ -152,10 +179,51 @@ const ScientificCalculator: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {showHistory && (
+          <div className="panel history-panel">
+            <button className="clear-history-btn" onClick={() => setHistory([])}>
+              Clear History
+            </button>
+            <ul>
+              {history.map((entry, i) => (
+                <li key={i} onClick={() => setInput(entry.split(" = ")[0])}>
+                  {entry}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {showExamples && (
+          <div className="panel examples-panel">
+            <h3>Examples</h3>
+            <div className="examples-grid">
+              {[
+                "sin(π/2)",
+                "cos(0)",
+                "tan(π/4)",
+                "asin(1)",
+                "log(100)",
+                "√16",
+                "3^2",
+                "e^2",
+                "φ+γ",
+              ].map((ex, i) => (
+                <button
+                  key={i}
+                  className="example-btn"
+                  onClick={() => setInput(ex)}
+                >
+                  {ex}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default ScientificCalculator;
-
