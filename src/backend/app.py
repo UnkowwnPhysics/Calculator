@@ -37,10 +37,28 @@ def safe_tan(x):
     result = math.tan(x)
     return 0.0 if abs(result) < 1e-10 else result
 
+def preprocess_expression(expression):
+    """Adiciona parênteses automaticamente para funções trigonométricas"""
+    import re
+    
+    # Lista de funções trigonométricas
+    trig_functions = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh']
+    
+    for func in trig_functions:
+        # Padrão para encontrar funções sem parênteses
+        pattern = r'\b' + func + r'(\d+\.?\d*|\.\d+|\b)'
+        replacement = func + r'(\1)'
+        expression = re.sub(pattern, replacement, expression)
+    
+    return expression
+
 def safe_eval(expression):
     """Avalia expressão matemática de forma segura"""
+    # Pré-processa a expressão
+    expression = preprocess_expression(expression)
+    
+    # Resto do código permanece igual...
     # Verificar se a expressão contém números complexos
-    # Usar uma regex mais precisa para evitar falsos positivos
     has_complex = re.search(r'(?<![a-zA-Z_])[ij](?![a-zA-Z_])', expression) or re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression)
 
     # Substituições seguras
@@ -119,6 +137,7 @@ async def options_login():
 @app.options("/calculate")
 async def options_calculate():
     return {"allow": "POST"}
+
 
 
 
