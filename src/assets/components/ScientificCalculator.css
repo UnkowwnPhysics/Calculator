@@ -72,7 +72,7 @@
   padding: 20px;
   flex: 1;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  max-width: 600px; /* Aumentado para acomodar 6 colunas */
+  max-width: 600px;
 }
 
 .calculator-display {
@@ -96,6 +96,7 @@
   font-family: 'Courier New', monospace;
   outline: none;
   text-align: right;
+  caret-color: white; /* Cursor visível */
 }
 
 .calculator-input-field::placeholder {
@@ -109,11 +110,12 @@
   text-align: right;
   margin-top: 10px;
   animation: fadeIn 0.3s ease;
+  min-height: 1.8em;
 }
 
 .scientific-keypad {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 6 colunas fixas */
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
   width: 100%;
 }
@@ -170,7 +172,7 @@
 .equals {
   background: #28a745;
   color: white;
-  grid-column: span 2; /* ocupa duas colunas */
+  grid-column: span 2;
 }
 
 .equals:hover {
