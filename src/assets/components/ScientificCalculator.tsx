@@ -12,6 +12,12 @@ const ScientificCalculator: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
+  // Lista de funções trigonométricas e outras funções
+  const mathFunctions = [
+    'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
+    'sinh', 'cosh', 'tanh', 'log', 'ln', 'sqrt', 'abs'
+  ];
+
   useEffect(() => {
     const savedHistory = localStorage.getItem("calcHistory");
     if (savedHistory) setHistory(JSON.parse(savedHistory));
@@ -23,7 +29,27 @@ const ScientificCalculator: React.FC = () => {
   }, [history]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    const newValue = e.target.value;
+    setInput(newValue);
+
+    // Verificar se o usuário acabou de digitar uma função matemática
+    const cursorPosition = e.target.selectionStart;
+    
+    mathFunctions.forEach(func => {
+      if (newValue.endsWith(func) && cursorPosition === newValue.length) {
+        // Adicionar parênteses após a função
+        const updatedValue = newValue + "()";
+        setInput(updatedValue);
+        
+        // Posicionar o cursor entre os parênteses
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.selectionStart = cursorPosition + func.length + 1;
+            inputRef.current.selectionEnd = cursorPosition + func.length + 1;
+          }
+        }, 0);
+      }
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -45,78 +71,58 @@ const ScientificCalculator: React.FC = () => {
     const end = inputEl.selectionEnd || 0;
     
     if (value === "=") {
-        calculateExpression();
+      calculateExpression();
     } else if (value === "C") {
-        setInput("");
-        setResult("");
+      setInput("");
+      setResult("");
     } else if (value === "←") {
-        if (start === end && start > 0) {
-            const newInput = input.substring(0, start - 1) + input.substring(end);
-            setInput(newInput);
-            setTimeout(() => {
-                if (inputEl) {
-                    inputEl.selectionStart = start - 1;
-                    inputEl.selectionEnd = start - 1;
-                }
-            }, 0);
-        } else if (start !== end) {
-            const newInput = input.substring(0, start) + input.substring(end);
-            setInput(newInput);
-            setTimeout(() => {
-                if (inputEl) {
-                    inputEl.selectionStart = start;
-                    inputEl.selectionEnd = start;
-                }
-            }, 0);
-        }
+      if (start === end && start > 0) {
+        // Delete one character at cursor position
+        const newInput = input.substring(0, start - 1) + input.substring(end);
+        setInput(newInput);
+        // Move cursor back by one
+        setTimeout(() => {
+          if (inputEl) {
+            inputEl.selectionStart = start - 1;
+            inputEl.selectionEnd = start - 1;
+          }
+        }, 0);
+      } else if (start !== end) {
+        // Delete selected text
+        const newInput = input.substring(0, start) + input.substring(end);
+        setInput(newInput);
+        // Keep cursor at deletion start position
+        setTimeout(() => {
+          if (inputEl) {
+            inputEl.selectionStart = start;
+            inputEl.selectionEnd = start;
+          }
+        }, 0);
+      }
     } else if (value === "CE") {
-        setInput("");
+      setInput("");
     } else if (value === "x²") {
-        insertTextAtCursor("²");
+      insertTextAtCursor("²");
     } else if (value === "xʸ") {
-        insertTextAtCursor("^");
+      insertTextAtCursor("^");
     } else if (value === "10ˣ") {
-        insertTextAtCursor("10^");
+      insertTextAtCursor("10^");
     } else if (value === "eˣ") {
-        insertTextAtCursor("e^");
+      insertTextAtCursor("e^");
     } else if (value === "exp") {
-        insertTextAtCursor("exp(");
+      insertTextAtCursor("exp(");
     } else if (value === "±") {
-        setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
+      // Toggle sign - simple implementation for start of expression
+      setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
     } else if (value === "i") {
-        insertTextAtCursor("i");
-    } else if ([
-        'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
-        'sinh', 'cosh', 'tanh', 'log', 'ln', '√', 'abs'
-    ].includes(value)) {
-        // Para funções trigonométricas, insere com parênteses
-        insertFunctionWithParentheses(value);
+      insertTextAtCursor("i");
+    } else if (mathFunctions.includes(value)) {
+      // Para funções matemáticas, insere com parênteses
+      insertFunctionWithParentheses(value);
     } else {
-        insertTextAtCursor(value);
+      insertTextAtCursor(value);
     }
-};
-
-
-const insertFunctionWithParentheses = (func: string) => {
-    const inputEl = inputRef.current;
-    if (!inputEl) return;
-
-    const start = inputEl.selectionStart || 0;
-    const end = inputEl.selectionEnd || 0;
-    
-    const newInput = input.substring(0, start) + func + "()" + input.substring(end);
-    setInput(newInput);
-    
-
-    setTimeout(() => {
-        if (inputEl) {
-            const newPos = start + func.length + 1;
-            inputEl.selectionStart = newPos;
-            inputEl.selectionEnd = newPos;
-            inputEl.focus();
-        }
-    }, 0);
-};
+  };
 
   const insertTextAtCursor = (text: string) => {
     const inputEl = inputRef.current;
@@ -134,6 +140,27 @@ const insertFunctionWithParentheses = (func: string) => {
         const newPos = start + text.length;
         inputEl.selectionStart = newPos;
         inputEl.selectionEnd = newPos;
+      }
+    }, 0);
+  };
+
+  const insertFunctionWithParentheses = (func: string) => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+
+    const start = inputEl.selectionStart || 0;
+    const end = inputEl.selectionEnd || 0;
+    
+    const newInput = input.substring(0, start) + func + "()" + input.substring(end);
+    setInput(newInput);
+    
+    // Posiciona o cursor dentro dos parênteses
+    setTimeout(() => {
+      if (inputEl) {
+        const newPos = start + func.length + 1;
+        inputEl.selectionStart = newPos;
+        inputEl.selectionEnd = newPos;
+        inputEl.focus();
       }
     }, 0);
   };
@@ -297,5 +324,3 @@ const insertFunctionWithParentheses = (func: string) => {
 };
 
 export default ScientificCalculator;
-
-
