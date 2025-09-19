@@ -93,13 +93,18 @@ const ScientificCalculator: React.FC = () => {
   };
 
   const scientificButtons = [
-    ["sin", "cos", "tan", "log", "ln"],
-    ["π", "e", "x²", "xʸ", "√", "i"],
+  // Funções primeiro
+    ["sin", "cos", "tan", "log", "ln", "π"],
+    ["e", "x²", "xʸ", "√", "i", "exp"],
+
+  // Operações (C, CE, etc.)
     ["(", ")", "←", "C", "CE", "±"],
-    ["7", "8", "9", "/", "abs"],
-    ["4", "5", "6", "*", "exp"],
-    ["1", "2", "3", "-", "10ˣ"],
-    ["0", ".", "=", "+", "eˣ"]
+    ["abs", "10ˣ", "eˣ", "/", "*", "-"],
+
+  // Números por último
+    ["7", "8", "9", "+", ".", "="],
+    ["4", "5", "6", "0", "", ""],
+    ["1", "2", "3", "", "", ""],
   ];
 
   return (
@@ -153,3 +158,4 @@ const ScientificCalculator: React.FC = () => {
 };
 
 export default ScientificCalculator;
+
