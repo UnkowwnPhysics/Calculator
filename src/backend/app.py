@@ -53,11 +53,20 @@ def safe_eval(expression):
     expression = re.sub(r'sin\(', 'safe_sin(', expression)
     expression = re.sub(r'cos\(', 'safe_cos(', expression)
     expression = re.sub(r'tan\(', 'safe_tan(', expression)
+
+    expression = re.sub(r'asin\(', 'math.asin(', expression)
+    expression = re.sub(r'acos\(', 'math.acos(', expression)
+    expression = re.sub(r'atan\(', 'math.atan(', expression)
+
+    expression = re.sub(r'sinh\(', 'math.sinh(', expression)
+    expression = re.sub(r'cosh\(', 'math.cosh(', expression)
+    expression = re.sub(r'tanh\(', 'math.tanh(', expression)
+
     expression = re.sub(r'log\(', 'math.log10(', expression)
     expression = re.sub(r'ln\(', 'math.log(', expression)
     expression = re.sub(r'abs\(', 'math.fabs(', expression)
     expression = re.sub(r'exp\(', 'math.exp(', expression)
-
+    
     allowed = {
         "math": math,
         "safe_sin": safe_sin,
@@ -107,3 +116,4 @@ async def options_login():
 @app.options("/calculate")
 async def options_calculate():
     return {"allow": "POST"}
+
