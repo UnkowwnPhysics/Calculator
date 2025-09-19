@@ -40,7 +40,8 @@ def safe_tan(x):
 def safe_eval(expression):
     """Avalia expressão matemática de forma segura"""
     # Verificar se a expressão contém números complexos
-    has_complex = re.search(r'(?<!\w)[ij](?!\w)', expression) or re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression)
+    # Usar uma regex mais precisa para evitar falsos positivos
+    has_complex = re.search(r'(?<![a-zA-Z_])[ij](?![a-zA-Z_])', expression) or re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression)
 
     # Substituições seguras
     expression = re.sub(r'\bpi\b', str(math.pi), expression, flags=re.IGNORECASE)
@@ -78,7 +79,7 @@ def safe_eval(expression):
     }
 
     if has_complex:
-        expression = re.sub(r'(\d*)\s*([ij])', r'\1*1j', expression)
+        expression = re.sub(r'(?<!\w)(\d*)\s*([ij])(?!\w)', r'\1*1j', expression)
         expression = expression.replace('*1j*1j', '*1j')
         allowed["cmath"] = cmath
         allowed["abs"] = abs
@@ -118,6 +119,7 @@ async def options_login():
 @app.options("/calculate")
 async def options_calculate():
     return {"allow": "POST"}
+
 
 
 
