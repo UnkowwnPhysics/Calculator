@@ -45,55 +45,78 @@ const ScientificCalculator: React.FC = () => {
     const end = inputEl.selectionEnd || 0;
     
     if (value === "=") {
-      calculateExpression();
+        calculateExpression();
     } else if (value === "C") {
-      setInput("");
-      setResult("");
+        setInput("");
+        setResult("");
     } else if (value === "←") {
-      if (start === end && start > 0) {
-        // Delete one character at cursor position
-        const newInput = input.substring(0, start - 1) + input.substring(end);
-        setInput(newInput);
-        // Move cursor back by one
-        setTimeout(() => {
-          if (inputEl) {
-            inputEl.selectionStart = start - 1;
-            inputEl.selectionEnd = start - 1;
-          }
-        }, 0);
-      } else if (start !== end) {
-        // Delete selected text
-        const newInput = input.substring(0, start) + input.substring(end);
-        setInput(newInput);
-        // Keep cursor at deletion start position
-        setTimeout(() => {
-          if (inputEl) {
-            inputEl.selectionStart = start;
-            inputEl.selectionEnd = start;
-          }
-        }, 0);
-      }
+        if (start === end && start > 0) {
+            const newInput = input.substring(0, start - 1) + input.substring(end);
+            setInput(newInput);
+            setTimeout(() => {
+                if (inputEl) {
+                    inputEl.selectionStart = start - 1;
+                    inputEl.selectionEnd = start - 1;
+                }
+            }, 0);
+        } else if (start !== end) {
+            const newInput = input.substring(0, start) + input.substring(end);
+            setInput(newInput);
+            setTimeout(() => {
+                if (inputEl) {
+                    inputEl.selectionStart = start;
+                    inputEl.selectionEnd = start;
+                }
+            }, 0);
+        }
     } else if (value === "CE") {
-      setInput("");
+        setInput("");
     } else if (value === "x²") {
-      insertTextAtCursor("²");
+        insertTextAtCursor("²");
     } else if (value === "xʸ") {
-      insertTextAtCursor("^");
+        insertTextAtCursor("^");
     } else if (value === "10ˣ") {
-      insertTextAtCursor("10^");
+        insertTextAtCursor("10^");
     } else if (value === "eˣ") {
-      insertTextAtCursor("e^");
+        insertTextAtCursor("e^");
     } else if (value === "exp") {
-      insertTextAtCursor("exp(");
+        insertTextAtCursor("exp(");
     } else if (value === "±") {
-      // Toggle sign - simple implementation for start of expression
-      setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
+        setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
     } else if (value === "i") {
-      insertTextAtCursor("i");
+        insertTextAtCursor("i");
+    } else if ([
+        'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
+        'sinh', 'cosh', 'tanh', 'log', 'ln', '√', 'abs'
+    ].includes(value)) {
+        // Para funções trigonométricas, insere com parênteses
+        insertFunctionWithParentheses(value);
     } else {
-      insertTextAtCursor(value);
+        insertTextAtCursor(value);
     }
-  };
+};
+
+
+const insertFunctionWithParentheses = (func: string) => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+
+    const start = inputEl.selectionStart || 0;
+    const end = inputEl.selectionEnd || 0;
+    
+    const newInput = input.substring(0, start) + func + "()" + input.substring(end);
+    setInput(newInput);
+    
+
+    setTimeout(() => {
+        if (inputEl) {
+            const newPos = start + func.length + 1;
+            inputEl.selectionStart = newPos;
+            inputEl.selectionEnd = newPos;
+            inputEl.focus();
+        }
+    }, 0);
+};
 
   const insertTextAtCursor = (text: string) => {
     const inputEl = inputRef.current;
@@ -274,4 +297,5 @@ const ScientificCalculator: React.FC = () => {
 };
 
 export default ScientificCalculator;
+
 
