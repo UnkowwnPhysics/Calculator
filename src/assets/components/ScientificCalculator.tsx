@@ -98,7 +98,7 @@ const ScientificCalculator: React.FC = () => {
     ["sinh", "cosh", "tanh", "log", "ln", "√"],
 
     // Constantes e especiais
-    ["π", "e", "φ", "γ", "i", "exp"],
+    ["π", "e", "i", "exp"],
 
     // Operações
     ["(", ")", "←", "C", "CE", "±"],
@@ -226,6 +226,7 @@ const ScientificCalculator: React.FC = () => {
 };
 
 export default ScientificCalculator;
+
 
 
 
