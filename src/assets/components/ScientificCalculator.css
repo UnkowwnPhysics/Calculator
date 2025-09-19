@@ -76,12 +76,11 @@
 }
 
 .calculator-display {
-  background: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
-  padding: 0;
+  padding: 10px;
   margin-bottom: 20px;
-  text-align: right;
-  min-height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -89,16 +88,14 @@
 
 .calculator-input-field {
   width: 100%;
-  height: 60px;  /* ocupa bem a área */
-  background: rgba(0, 0, 0, 0.3); /* mesma cor do display */
+  height: 50px;
+  background: transparent;
   border: none;
   color: white;
   font-size: 1.5em;
   font-family: 'Courier New', monospace;
   outline: none;
   text-align: right;
-  padding: 10px;
-  border-radius: 10px;
 }
 
 .calculator-input-field::placeholder {
@@ -106,20 +103,19 @@
 }
 
 .calculator-result {
-  color: white;
-  font-size: 2em;
+  color: #00ff99;
+  font-size: 1.8em;
   font-weight: bold;
-  overflow-x: auto;
-  white-space: nowrap;
-  font-family: 'Courier New', monospace;
-  min-height: 40px;
+  text-align: right;
   margin-top: 10px;
+  animation: fadeIn 0.3s ease;
 }
 
 .scientific-keypad {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 6 colunas para acomodar o botão "i" */
-  gap: 8px;
+  grid-template-columns: repeat(6, 1fr); /* 6 colunas fixas */
+  gap: 10px;
+  width: 100%;
 }
 
 .keypad-row {
@@ -127,14 +123,13 @@
 }
 
 .scientific-key {
-  padding: 12px;
+  height: 50px;
   border: none;
-  border-radius: 8px;
-  font-size: 0.9em;
+  border-radius: 10px;
+  font-size: 1.2em;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s;
-  min-height: 40px;
+  transition: 0.2s;
 }
 
 .scientific-key:hover {
@@ -146,40 +141,40 @@
 }
 
 .number {
-  background: rgba(255, 255, 255, 0.2);
+  background: #7d6bff;
   color: white;
 }
 
 .number:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #937dff;
 }
 
 .operation {
-  background: rgba(255, 152, 0, 0.8);
+  background: #f08c1a;
   color: white;
 }
 
 .operation:hover {
-  background: rgba(255, 152, 0, 1);
+  background: #ffa726;
 }
 
 .function {
-  background: rgba(33, 150, 243, 0.8);
+  background: #1e90ff;
   color: white;
 }
 
 .function:hover {
-  background: rgba(33, 150, 243, 1);
+  background: #42a5f5;
 }
 
 .equals {
-  background: rgba(76, 175, 80, 0.8);
+  background: #28a745;
   color: white;
-  grid-column: span 2;
+  grid-column: span 2; /* ocupa duas colunas */
 }
 
 .equals:hover {
-  background: rgba(76, 175, 80, 1);
+  background: #2ecc71;
 }
 
 .complex {
@@ -292,8 +287,8 @@
   }
   
   .scientific-key {
-    padding: 10px;
-    font-size: 0.8em;
+    font-size: 1em;
+    height: 45px;
   }
 
   .header-buttons {
@@ -355,10 +350,6 @@
   to { opacity: 1; }
 }
 
-.calculator-result {
-  animation: fadeIn 0.3s ease;
-}
-
 .loading {
   position: relative;
   color: transparent !important;
@@ -381,4 +372,3 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
