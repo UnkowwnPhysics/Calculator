@@ -208,7 +208,6 @@ const ScientificCalculator: React.FC = () => {
                 "√16",
                 "3^2",
                 "e^2",
-                "φ+γ",
               ].map((ex, i) => (
                 <button
                   key={i}
@@ -227,4 +226,5 @@ const ScientificCalculator: React.FC = () => {
 };
 
 export default ScientificCalculator;
+
 
