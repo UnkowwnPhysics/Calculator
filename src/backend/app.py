@@ -38,21 +38,18 @@ def safe_tan(x):
     return 0.0 if abs(result) < 1e-10 else result
 
 def safe_eval(expression):
-    """
-    Avalia uma expressão matemática de forma segura e trata valores muito próximos de zero
-    apenas para funções trigonométricas.
-    """
+    """Avalia expressão matemática de forma segura"""
     # Verificar se a expressão contém números complexos
     has_complex = re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression) or 'i' in expression or 'j' in expression
-    
-    # Substituir símbolos e funções
-    expression = expression.replace("π", str(math.pi))
-    expression = expression.replace("e", str(math.e))
+
+    # Substituições seguras
+    expression = re.sub(r'\bpi\b', str(math.pi), expression, flags=re.IGNORECASE)
+    expression = re.sub(r'\be\b', str(math.e), expression, flags=re.IGNORECASE)
     expression = expression.replace("²", "**2")
     expression = expression.replace("^", "**")
     expression = expression.replace("√", "math.sqrt")
-    
-    # Substituir funções trigonométricas por nossas versões seguras
+
+    # Funções matemáticas
     expression = re.sub(r'sin\(', 'safe_sin(', expression)
     expression = re.sub(r'cos\(', 'safe_cos(', expression)
     expression = re.sub(r'tan\(', 'safe_tan(', expression)
@@ -60,8 +57,7 @@ def safe_eval(expression):
     expression = re.sub(r'ln\(', 'math.log(', expression)
     expression = re.sub(r'abs\(', 'math.fabs(', expression)
     expression = re.sub(r'exp\(', 'math.exp(', expression)
-    
-    # Dicionário de funções e constantes permitidas
+
     allowed = {
         "math": math,
         "safe_sin": safe_sin,
@@ -69,31 +65,19 @@ def safe_eval(expression):
         "safe_tan": safe_tan,
         "__builtins__": {}
     }
-    
-    # Se houver números complexos, usar cmath
+
     if has_complex:
-        # Substituir i e j por 1j para números complexos
         expression = re.sub(r'(\d*)\s*([ij])', r'\1*1j', expression)
-        expression = expression.replace('*1j*1j', '*1j')  # Corrigir casos como 2i -> 2*1j
+        expression = expression.replace('*1j*1j', '*1j')
         allowed["cmath"] = cmath
-        allowed["abs"] = abs  # abs funciona com complexos
-    
-    # Avaliar a expressão
+        allowed["abs"] = abs
+
     result = eval(expression, allowed)
-    
-    # Formatando o resultado para números complexos
+
     if has_complex and isinstance(result, complex):
-        # Simplificar representação
-        real = result.real
-        imag = result.imag
-        
-        # Aplicar tolerância para partes muito pequenas
-        if abs(real) < 1e-10:
-            real = 0
-        if abs(imag) < 1e-10:
-            imag = 0
-            
-        # Formatar a saída
+        real, imag = result.real, result.imag
+        if abs(real) < 1e-10: real = 0
+        if abs(imag) < 1e-10: imag = 0
         if imag == 0:
             result = real
         elif real == 0:
@@ -101,7 +85,7 @@ def safe_eval(expression):
         else:
             sign = "+" if imag >= 0 else ""
             result = f"{real}{sign}{imag}i"
-    
+
     return result
 
 @app.post("/login")
