@@ -82,7 +82,7 @@ export default function QuadraticFormula() {
           />
         </div>
 
-        <button className="calculate-btn" onClick={handleCalculate}>
+        <button type="button" className="calculate-btn" onClick={handleCalculate}>
           Calcular
         </button>
 
