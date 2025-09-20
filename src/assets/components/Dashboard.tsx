@@ -6,6 +6,10 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Obter nome do usuário do localStorage
+  const userData = localStorage.getItem("user");
+  const userName = userData ? JSON.parse(userData).name || "User" : "User";
+
   const features = [
     { 
       title: "Basic Calculator", 
@@ -30,7 +34,7 @@ const Dashboard: React.FC = () => {
     { 
       title: "Quadratic Formula Solver", 
       color: "rgba(233, 30, 99, 0.8)",
-      path: "/quadratic-solver"
+      path: "/quadraticformula-calculator"  // Corrigido para corresponder à rota definida
     },
     { 
       title: "Graphing Calculator", 
@@ -40,6 +44,8 @@ const Dashboard: React.FC = () => {
   ];
 
   const handleLogout = () => {
+    // Remover ambos os itens de autenticação
+    localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     navigate("/");
   };
@@ -55,7 +61,9 @@ const Dashboard: React.FC = () => {
         <div
           className="profile-circle"
           onClick={() => setMenuOpen(!menuOpen)}
-        ></div>
+        >
+          {userName.charAt(0).toUpperCase()}
+        </div>
         {menuOpen && (
           <div className="profile-menu">
             <button className="logout-btn" onClick={handleLogout}>
@@ -66,7 +74,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Welcome */}
-      <h1 className="welcome-text">Welcome David!</h1>
+      <h1 className="welcome-text">Welcome {userName}!</h1>
 
       {/* Grid de features */}
       <div className="dashboard-grid">
@@ -85,6 +93,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-
 export default Dashboard;
-
