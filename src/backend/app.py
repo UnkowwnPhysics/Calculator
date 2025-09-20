@@ -24,7 +24,7 @@ class LoginRequest(BaseModel):
 class CalculationRequest(BaseModel):
     expression: str
 
-# Novas funções trigonométricas com tolerância
+# Funções trigonométricas seguras
 def safe_sin(x):
     result = math.sin(x)
     return 0.0 if abs(result) < 1e-10 else result
@@ -39,36 +39,27 @@ def safe_tan(x):
 
 def preprocess_expression(expression):
     """Adiciona parênteses automaticamente para funções trigonométricas"""
-    import re
-    
-    # Lista de funções trigonométricas
     trig_functions = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh']
-    
     for func in trig_functions:
-        # Padrão para encontrar funções sem parênteses
         pattern = r'\b' + func + r'(\d+\.?\d*|\.\d+|\b)'
         replacement = func + r'(\1)'
         expression = re.sub(pattern, replacement, expression)
-    
     return expression
 
 def safe_eval(expression):
     """Avalia expressão matemática de forma segura"""
-    # Pré-processa a expressão
     expression = preprocess_expression(expression)
-    
-    # Resto do código permanece igual...
-    # Verificar se a expressão contém números complexos
-    has_complex = re.search(r'(?<![a-zA-Z_])[ij](?![a-zA-Z_])', expression) or re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression)
 
-    # Substituições seguras
+    # Detecta números complexos
+    has_complex = re.search(r'(?<![a-zA-Z_])[ij](?![a-zA-Z_])', expression) or \
+                  re.search(r'\d+\s*[+-]\s*\d*\s*[ij]', expression)
+
+    # Substituições
     expression = re.sub(r'\bpi\b', str(math.pi), expression, flags=re.IGNORECASE)
     expression = re.sub(r'\be\b', str(math.e), expression, flags=re.IGNORECASE)
-    expression = expression.replace("²", "**2")
-    expression = expression.replace("^", "**")
-    expression = expression.replace("√", "math.sqrt")
+    expression = expression.replace("²", "**2").replace("^", "**").replace("√", "math.sqrt")
 
-    # Funções matemáticas
+    # Mapeamento de funções
     expression = re.sub(r'sin\(', 'safe_sin(', expression)
     expression = re.sub(r'cos\(', 'safe_cos(', expression)
     expression = re.sub(r'tan\(', 'safe_tan(', expression)
@@ -85,7 +76,7 @@ def safe_eval(expression):
     expression = re.sub(r'ln\(', 'math.log(', expression)
     expression = re.sub(r'abs\(', 'math.fabs(', expression)
     expression = re.sub(r'exp\(', 'math.exp(', expression)
-    
+
     allowed = {
         "math": math,
         "safe_sin": safe_sin,
@@ -104,6 +95,7 @@ def safe_eval(expression):
 
     result = eval(expression, allowed)
 
+    # Ajuste para números complexos
     if has_complex and isinstance(result, complex):
         real, imag = result.real, result.imag
         if abs(real) < 1e-10: real = 0
@@ -137,8 +129,3 @@ async def options_login():
 @app.options("/calculate")
 async def options_calculate():
     return {"allow": "POST"}
-
-
-
-
-
