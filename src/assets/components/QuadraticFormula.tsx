@@ -44,32 +44,46 @@ export default function QuadraticFormula() {
   };
 
   return (
-    <div className="quadratic-container">
-      <h2>Calculadora Fórmula Quadrática</h2>
-      <div className="inputs">
-        <input
-          type="number"
-          placeholder="a"
-          value={a}
-          onChange={(e) => setA(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="b"
-          value={b}
-          onChange={(e) => setB(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="c"
-          value={c}
-          onChange={(e) => setC(e.target.value)}
-        />
-      </div>
-      <button onClick={handleCalculate}>Calcular</button>
+    <div className="calculator-container">
+      {/* Botão voltar */}
+      <button className="back-btn">⬅ Back to Dashboard</button>
 
-      {error && <p className="error">{error}</p>}
-      {result && <p className="result">{result}</p>}
+      <div className="calculator">
+        <h2 className="title">Quadratic Formula</h2>
+
+        <div className="nav-buttons">
+          <button className="nav-btn">History</button>
+          <button className="nav-btn">Examples</button>
+        </div>
+
+        <div className="inputs">
+          <input
+            type="number"
+            placeholder="a"
+            value={a}
+            onChange={(e) => setA(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="b"
+            value={b}
+            onChange={(e) => setB(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="c"
+            value={c}
+            onChange={(e) => setC(e.target.value)}
+          />
+        </div>
+
+        <button className="calculate-btn" onClick={handleCalculate}>
+          Calcular
+        </button>
+
+        {error && <p className="error">{error}</p>}
+        {result && <p className="result">{result}</p>}
+      </div>
     </div>
   );
 }
