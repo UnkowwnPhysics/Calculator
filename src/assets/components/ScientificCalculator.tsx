@@ -12,10 +12,9 @@ const ScientificCalculator: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // Lista de funções trigonométricas e outras funções
   const mathFunctions = [
-    'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
-    'sinh', 'cosh', 'tanh', 'log', 'ln', 'sqrt', 'abs'
+    "sin", "cos", "tan", "asin", "acos", "atan",
+    "sinh", "cosh", "tanh", "log", "ln", "sqrt", "abs"
   ];
 
   useEffect(() => {
@@ -30,24 +29,18 @@ const ScientificCalculator: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    const cursorPosition = e.target.selectionStart;
-    
+    const cursorPosition = e.target.selectionStart ?? newValue.length;
     setInput(newValue);
 
-    // Verificar se o usuário acabou de digitar uma função matemática
-    mathFunctions.forEach(func => {
-      // Verifica se a função foi digitada e se o cursor está no final
+    // Quando escreve a função manualmente, adiciona () e coloca cursor dentro
+    mathFunctions.forEach((func) => {
       if (newValue.endsWith(func) && cursorPosition === newValue.length) {
-        // Usamos requestAnimationFrame para garantir que o DOM foi atualizado
         requestAnimationFrame(() => {
           const updatedValue = newValue + "()";
           setInput(updatedValue);
-          
-          // Agora usamos um timeout para garantir que o input foi atualizado
           setTimeout(() => {
             if (inputRef.current) {
-              // Posiciona o cursor entre os parênteses
-              const newCursorPosition = cursorPosition + func.length + 1;
+              const newCursorPosition = updatedValue.length - 1;
               inputRef.current.selectionStart = newCursorPosition;
               inputRef.current.selectionEnd = newCursorPosition;
             }
@@ -69,34 +62,31 @@ const ScientificCalculator: React.FC = () => {
   };
 
   const handleButtonClick = (value: string) => {
-    const inputEl = inputRef.current;
-    if (!inputEl) return;
-
-    const start = inputEl.selectionStart || 0;
-    const end = inputEl.selectionEnd || 0;
-    
+    if (!inputRef.current) return;
     if (value === "=") {
       calculateExpression();
     } else if (value === "C") {
       setInput("");
       setResult("");
     } else if (value === "←") {
+      const start = inputRef.current.selectionStart ?? 0;
+      const end = inputRef.current.selectionEnd ?? 0;
       if (start === end && start > 0) {
-        const newInput = input.substring(0, start - 1) + input.substring(end);
+        const newInput = input.slice(0, start - 1) + input.slice(end);
         setInput(newInput);
         setTimeout(() => {
-          if (inputEl) {
-            inputEl.selectionStart = start - 1;
-            inputEl.selectionEnd = start - 1;
+          if (inputRef.current) {
+            inputRef.current.selectionStart = start - 1;
+            inputRef.current.selectionEnd = start - 1;
           }
         }, 0);
       } else if (start !== end) {
-        const newInput = input.substring(0, start) + input.substring(end);
+        const newInput = input.slice(0, start) + input.slice(end);
         setInput(newInput);
         setTimeout(() => {
-          if (inputEl) {
-            inputEl.selectionStart = start;
-            inputEl.selectionEnd = start;
+          if (inputRef.current) {
+            inputRef.current.selectionStart = start;
+            inputRef.current.selectionEnd = start;
           }
         }, 0);
       }
@@ -111,9 +101,9 @@ const ScientificCalculator: React.FC = () => {
     } else if (value === "eˣ") {
       insertTextAtCursor("e^");
     } else if (value === "exp") {
-      insertTextAtCursor("exp(");
+      insertFunctionWithParentheses("exp");
     } else if (value === "±") {
-      setInput(prev => prev.startsWith("-") ? prev.substring(1) : "-" + prev);
+      setInput((prev) => (prev.startsWith("-") ? prev.slice(1) : "-" + prev));
     } else if (value === "i") {
       insertTextAtCursor("i");
     } else if (mathFunctions.includes(value)) {
@@ -124,40 +114,32 @@ const ScientificCalculator: React.FC = () => {
   };
 
   const insertTextAtCursor = (text: string) => {
-    const inputEl = inputRef.current;
-    if (!inputEl) return;
-
-    const start = inputEl.selectionStart || 0;
-    const end = inputEl.selectionEnd || 0;
-    
-    const newInput = input.substring(0, start) + text + input.substring(end);
+    if (!inputRef.current) return;
+    const start = inputRef.current.selectionStart ?? 0;
+    const end = inputRef.current.selectionEnd ?? 0;
+    const newInput = input.slice(0, start) + text + input.slice(end);
     setInput(newInput);
-    
     setTimeout(() => {
-      if (inputEl) {
+      if (inputRef.current) {
         const newPos = start + text.length;
-        inputEl.selectionStart = newPos;
-        inputEl.selectionEnd = newPos;
+        inputRef.current.selectionStart = newPos;
+        inputRef.current.selectionEnd = newPos;
       }
     }, 0);
   };
 
   const insertFunctionWithParentheses = (func: string) => {
-    const inputEl = inputRef.current;
-    if (!inputEl) return;
-
-    const start = inputEl.selectionStart || 0;
-    const end = inputEl.selectionEnd || 0;
-    
-    const newInput = input.substring(0, start) + func + "()" + input.substring(end);
+    if (!inputRef.current) return;
+    const start = inputRef.current.selectionStart ?? 0;
+    const end = inputRef.current.selectionEnd ?? 0;
+    const newInput = input.slice(0, start) + func + "()" + input.slice(end);
     setInput(newInput);
-    
     setTimeout(() => {
-      if (inputEl) {
-        const newPos = start + func.length + 1;
-        inputEl.selectionStart = newPos;
-        inputEl.selectionEnd = newPos;
-        inputEl.focus();
+      if (inputRef.current) {
+        const newPos = start + func.length + 1; // dentro dos ()
+        inputRef.current.selectionStart = newPos;
+        inputRef.current.selectionEnd = newPos;
+        inputRef.current.focus();
       }
     }, 0);
   };
