@@ -6,6 +6,7 @@ import StarsBackground from "./assets/components/StarsBackground";
 import BasicCalculator from "./assets/components/BasicCalculator"; // Adicione este import
 import ScientificCalculator from './assets/components/ScientificCalculator';
 import Matrix from './assets/components/Matrix'; 
+import QuadraticFormula from './assets/components/QuadraticFormula';
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         {/* Rota padrão para qualquer caminho inválido */}
         <Route path="/scientific-calculator" element={<ScientificCalculator />} />
         <Route path="/matrix-calculator" element={<Matrix />} />
+        <Route path="/quadraticformula-calculator" element={<QuadraticFormula />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
