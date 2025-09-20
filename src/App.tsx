@@ -3,10 +3,19 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import LoginBox from "./assets/components/LoginBox";
 import Dashboard from "./assets/components/Dashboard";
 import StarsBackground from "./assets/components/StarsBackground";
-import BasicCalculator from "./assets/components/BasicCalculator"; // Adicione este import
+import BasicCalculator from "./assets/components/BasicCalculator";
 import ScientificCalculator from './assets/components/ScientificCalculator';
 import Matrix from './assets/components/Matrix'; 
 import QuadraticFormula from './assets/components/QuadraticFormula';
+
+// Adicione uma verificação simples de autenticação
+const isAuthenticated = () => {
+  return localStorage.getItem('authToken') !== null;
+};
+
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  return isAuthenticated() ? children : <Navigate to="/" />;
+};
 
 const App: React.FC = () => {
   return (
@@ -14,12 +23,46 @@ const App: React.FC = () => {
       <StarsBackground />
       <Routes>
         <Route path="/" element={<LoginBox />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/basic-calculator" element={<BasicCalculator />} /> {/* Adicione esta rota */}
-        {/* Rota padrão para qualquer caminho inválido */}
-        <Route path="/scientific-calculator" element={<ScientificCalculator />} />
-        <Route path="/matrix-calculator" element={<Matrix />} />
-        <Route path="/quadraticformula-calculator" element={<QuadraticFormula />} />
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/basic-calculator" 
+          element={
+            <ProtectedRoute>
+              <BasicCalculator />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/scientific-calculator" 
+          element={
+            <ProtectedRoute>
+              <ScientificCalculator />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/matrix-calculator" 
+          element={
+            <ProtectedRoute>
+              <Matrix />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/quadraticformula-calculator" 
+          element={
+            <ProtectedRoute>
+              <QuadraticFormula />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
