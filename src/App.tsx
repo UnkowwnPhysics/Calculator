@@ -10,11 +10,17 @@ import QuadraticFormula from './assets/components/QuadraticFormula';
 
 // Adicione uma verificação simples de autenticação
 const isAuthenticated = () => {
-  return localStorage.getItem('authToken') !== null;
+  const token = localStorage.getItem('authToken');
+  return token !== null && token !== undefined && token !== '';
 };
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   return isAuthenticated() ? children : <Navigate to="/" />;
+};
+
+// Componente para redirecionar usuários autenticados para o dashboard
+const PublicRoute = ({ children }: { children: JSX.Element }) => {
+  return !isAuthenticated() ? children : <Navigate to="/dashboard" />;
 };
 
 const App: React.FC = () => {
@@ -22,7 +28,14 @@ const App: React.FC = () => {
     <Router>
       <StarsBackground />
       <Routes>
-        <Route path="/" element={<LoginBox />} />
+        <Route 
+          path="/" 
+          element={
+            <PublicRoute>
+              <LoginBox />
+            </PublicRoute>
+          } 
+        />
         <Route 
           path="/dashboard" 
           element={
