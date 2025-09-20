@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // <- IMPORT
+import { useNavigate } from "react-router-dom";
 import "./QuadraticFormula.css";
 
 export default function QuadraticFormula() {
@@ -9,7 +9,7 @@ export default function QuadraticFormula() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate(); // <- INICIALIZA
+  const navigate = useNavigate();
 
   const handleCalculate = async () => {
     setError(null);
@@ -17,6 +17,12 @@ export default function QuadraticFormula() {
 
     if (!a || !b || !c) {
       setError("Preencha todos os coeficientes (a, b, c).");
+      return;
+    }
+
+    // Verificar se 'a' é zero (equação não é quadrática)
+    if (parseFloat(a) === 0) {
+      setError("O coeficiente 'a' não pode ser zero em uma equação quadrática.");
       return;
     }
 
@@ -48,7 +54,6 @@ export default function QuadraticFormula() {
 
   return (
     <div className="calculator-container">
-      {/* Botão voltar */}
       <button className="back-btn" onClick={() => navigate("/dashboard")}>
         ⬅ Back to Dashboard
       </button>
@@ -82,7 +87,11 @@ export default function QuadraticFormula() {
           />
         </div>
 
-        <button type="button" className="calculate-btn" onClick={handleCalculate}>
+        <button 
+          type="button" 
+          className="calculate-btn" 
+          onClick={handleCalculate}
+        >
           Calcular
         </button>
 
