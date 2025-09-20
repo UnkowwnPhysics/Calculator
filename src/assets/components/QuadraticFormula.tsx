@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // <- IMPORT
 import "./QuadraticFormula.css";
 
 export default function QuadraticFormula() {
@@ -7,6 +8,8 @@ export default function QuadraticFormula() {
   const [c, setC] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate(); // <- INICIALIZA
 
   const handleCalculate = async () => {
     setError(null);
@@ -46,7 +49,9 @@ export default function QuadraticFormula() {
   return (
     <div className="calculator-container">
       {/* Botão voltar */}
-      <button className="back-btn">⬅ Back to Dashboard</button>
+      <button className="back-btn" onClick={() => navigate("/dashboard")}>
+        ⬅ Back to Dashboard
+      </button>
 
       <div className="calculator">
         <h2 className="title">Quadratic Formula</h2>
