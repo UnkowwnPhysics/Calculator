@@ -33,6 +33,8 @@ const LoginBox: React.FC = () => {
       setLoading(false);
 
       if (data.success) {
+        // Armazena o token de autenticação
+        localStorage.setItem("authToken", data.token || "authenticated");
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/dashboard");
       } else {
