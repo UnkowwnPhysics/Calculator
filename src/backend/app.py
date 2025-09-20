@@ -37,16 +37,17 @@ def safe_tan(x):
     result = math.tan(x)
     return 0.0 if abs(result) < 1e-10 else result
 
-def preprocess_expression(expression):
-    """Adiciona parênteses automaticamente para funções trigonométricas"""
+def preprocess_expression(expression: str) -> str:
+    """Adiciona parênteses automaticamente só se usuário digitar sin34 (sem parênteses)."""
     trig_functions = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh']
     for func in trig_functions:
-        pattern = r'\b' + func + r'(\d+\.?\d*|\.\d+|\b)'
-        replacement = func + r'(\1)'
+        # se vier func + número, mas NÃO seguido de (
+        pattern = r'\b' + func + r'(?=\d)'
+        replacement = func + '('
         expression = re.sub(pattern, replacement, expression)
     return expression
 
-def safe_eval(expression):
+def safe_eval(expression: str):
     """Avalia expressão matemática de forma segura"""
     expression = preprocess_expression(expression)
 
