@@ -72,6 +72,11 @@
   margin-bottom: 20px;
 }
 
+.expression-input input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .expression-input input {
   width: 100%;
   padding: 12px;
