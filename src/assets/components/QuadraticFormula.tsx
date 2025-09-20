@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./QuadraticFormula.css";
 
@@ -12,6 +12,7 @@ export default function QuadraticFormula() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Carregar histórico do localStorage ao iniciar
   useEffect(() => {
@@ -25,6 +26,13 @@ export default function QuadraticFormula() {
   useEffect(() => {
     localStorage.setItem("quadraticHistory", JSON.stringify(history));
   }, [history]);
+
+  // Focar no input quando o componente for montado
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const extractCoefficients = (expr: string) => {
     // Simplificar a expressão
@@ -117,20 +125,25 @@ export default function QuadraticFormula() {
       // Calcular discriminante
       const discriminant = b * b - 4 * a * c;
 
+      let resultText = "";
+      
       if (discriminant < 0) {
         // Soluções complexas
         const realPart = -b / (2 * a);
         const imaginaryPart = Math.sqrt(-discriminant) / (2 * a);
-        setResult(`${variable}₁ = ${realPart.toFixed(2)} + ${imaginaryPart.toFixed(2)}i, ${variable}₂ = ${realPart.toFixed(2)} - ${imaginaryPart.toFixed(2)}i`);
+        resultText = `${variable}₁ = ${realPart.toFixed(2)} + ${imaginaryPart.toFixed(2)}i, ${variable}₂ = ${realPart.toFixed(2)} - ${imaginaryPart.toFixed(2)}i`;
       } else {
         // Soluções reais
         const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
         const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-        setResult(`${variable}₁ = ${x1.toFixed(2)}, ${variable}₂ = ${x2.toFixed(2)}`);
+        resultText = `${variable}₁ = ${x1.toFixed(2)}, ${variable}₂ = ${x2.toFixed(2)}`;
       }
 
+      setResult(resultText);
+
       // Adicionar ao histórico
-      const newHistory = [`${expression} → ${result}`, ...history];
+      const newHistoryItem = `${expression} → ${resultText}`;
+      const newHistory = [newHistoryItem, ...history];
       setHistory(newHistory.slice(0, 10)); // Manter apenas os 10 mais recentes
       
     } catch (err) {
@@ -138,6 +151,13 @@ export default function QuadraticFormula() {
       console.error("Calculation error:", err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Função para lidar com a tecla pressionada
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleCompute();
     }
   };
 
@@ -158,6 +178,13 @@ export default function QuadraticFormula() {
   const useExample = (example: string) => {
     setExpression(example);
     setShowExamples(false);
+    
+    // Focar no input após selecionar um exemplo
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   return (
@@ -236,10 +263,13 @@ export default function QuadraticFormula() {
 
         <div className="expression-input">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Enter quadratic expression (e.g., ax² + bx + c)"
             value={expression}
             onChange={(e) => setExpression(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
           />
         </div>
 
