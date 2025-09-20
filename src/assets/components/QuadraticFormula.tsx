@@ -9,6 +9,7 @@ export default function QuadraticFormula() {
   const [history, setHistory] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -25,92 +26,119 @@ export default function QuadraticFormula() {
     localStorage.setItem("quadraticHistory", JSON.stringify(history));
   }, [history]);
 
-  const handleCompute = async () => {
-    setError(null);
-    setResult(null);
-
-    if (!expression) {
-      setError("Please enter a quadratic expression.");
-      return;
-    }
-
-    // Extrair coeficientes da expressão
-    const coefficients = extractCoefficients(expression);
-    
-    if (!coefficients) {
-      setError("Invalid quadratic expression format. Use format: ax² + bx + c");
-      return;
-    }
-
-    const { a, b, c } = coefficients;
-
-    // Verificar se 'a' é zero (equação não é quadrática)
-    if (a === 0) {
-      setError("The coefficient 'a' cannot be zero in a quadratic equation.");
-      return;
-    }
-
-    try {
-      const expr1 = `(-(${b}) + math.sqrt((${b})**2 - 4*(${a})*(${c})))/(2*(${a}))`;
-      const expr2 = `(-(${b}) - math.sqrt((${b})**2 - 4*(${a})*(${c})))/(2*(${a}))`;
-
-      const res1 = await fetch("http://127.0.0.1:8000/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expression: expr1 }),
-      }).then((r) => r.json());
-
-      const res2 = await fetch("http://127.0.0.1:8000/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expression: expr2 }),
-      }).then((r) => r.json());
-
-      if (res1.success && res2.success) {
-        const resultText = `x₁ = ${res1.result}, x₂ = ${res2.result}`;
-        setResult(resultText);
-        
-        // Adicionar ao histórico
-        const newHistory = [`${expression} → ${resultText}`, ...history];
-        setHistory(newHistory.slice(0, 10)); // Manter apenas os 10 mais recentes
-      } else {
-        setError(res1.error || res2.error || "Computation error");
-      }
-    } catch (err) {
-      setError("Server connection error.");
-    }
-  };
-
   const extractCoefficients = (expr: string) => {
     // Simplificar a expressão
     expr = expr.toLowerCase().replace(/\s+/g, '');
     
+    // Encontrar todas as variáveis (letras) na expressão
+    const variables = expr.match(/[a-z]/g);
+    if (!variables || variables.length === 0) {
+      return null; // Nenhuma variável encontrada
+    }
+    
+    // Usar a primeira letra como variável
+    const variable = variables[0];
+    
     // Padrões para detectar coeficientes
-    const aMatch = expr.match(/([-+]?[0-9]*\.?[0-9]+)?x²|x\^2/);
-    const bMatch = expr.match(/([-+]?[0-9]*\.?[0-9]+)?x(?!²|\^)/);
-    const cMatch = expr.match(/([-+]?[0-9]*\.?[0-9]+)(?!.*x)/);
+    const quadraticPattern = new RegExp(`([-+]?[0-9]*\\.?[0-9]+)?${variable}\\^2|${variable}²`, 'g');
+    const linearPattern = new RegExp(`([-+]?[0-9]*\\.?[0-9]+)?${variable}(?!\\^2|²)`, 'g');
+    const constantPattern = /([-+]?[0-9]*\.?[0-9]+)(?![^]*[a-z])/g;
     
     let a = 0, b = 0, c = 0;
     
-    // Extrair coeficiente a
+    // Extrair coeficiente a (quadrático)
+    const aMatch = expr.match(quadraticPattern);
     if (aMatch) {
-      a = aMatch[1] ? parseFloat(aMatch[1]) : 1;
+      a = aMatch[0].includes(variable) ? 
+          (aMatch[0].replace(variable, '').replace('^2', '').replace('²', '') || '1') : '0';
+      a = parseFloat(a) || 1;
       if (aMatch[0].startsWith('-')) a = -a;
     }
     
-    // Extrair coeficiente b
+    // Extrair coeficiente b (linear)
+    const bMatch = expr.match(linearPattern);
     if (bMatch) {
-      b = bMatch[1] ? parseFloat(bMatch[1]) : 1;
-      if (bMatch[0].startsWith('-')) b = -b;
+      // Filtrar matches que não são quadráticos
+      const linearMatches = bMatch.filter(m => !m.includes('^2') && !m.includes('²'));
+      if (linearMatches.length > 0) {
+        b = linearMatches[0].includes(variable) ? 
+            (linearMatches[0].replace(variable, '') || '1') : '0';
+        b = parseFloat(b) || 1;
+        if (linearMatches[0].startsWith('-')) b = -b;
+      }
     }
     
-    // Extrair coeficiente c
+    // Extrair coeficiente c (constante)
+    const cMatch = expr.match(constantPattern);
     if (cMatch) {
-      c = parseFloat(cMatch[1]);
-      if (cMatch[0].startsWith('-')) c = -c;
+      // Encontrar o termo constante que não está associado a uma variável
+      for (const match of cMatch) {
+        if (!expr.includes(match + variable)) {
+          c = parseFloat(match);
+          if (match.startsWith('-')) c = -c;
+          break;
+        }
+      }
     }
     
-    return { a, b, c };
+    return { a, b, c, variable };
+  };
+
+  const handleCompute = async () => {
+    setError(null);
+    setResult(null);
+    setIsLoading(true);
+
+    if (!expression.trim()) {
+      setError("Please enter a quadratic expression.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Extrair coeficientes da expressão
+      const coefficients = extractCoefficients(expression);
+      
+      if (!coefficients) {
+        setError("Invalid expression. Please use a format like: ax² + bx + c");
+        setIsLoading(false);
+        return;
+      }
+
+      const { a, b, c, variable } = coefficients;
+
+      // Verificar se 'a' é zero (equação não é quadrática)
+      if (a === 0) {
+        setError("The quadratic coefficient cannot be zero.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Calcular discriminante
+      const discriminant = b * b - 4 * a * c;
+
+      if (discriminant < 0) {
+        // Soluções complexas
+        const realPart = -b / (2 * a);
+        const imaginaryPart = Math.sqrt(-discriminant) / (2 * a);
+        setResult(`${variable}₁ = ${realPart.toFixed(2)} + ${imaginaryPart.toFixed(2)}i, ${variable}₂ = ${realPart.toFixed(2)} - ${imaginaryPart.toFixed(2)}i`);
+      } else {
+        // Soluções reais
+        const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+        const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+        setResult(`${variable}₁ = ${x1.toFixed(2)}, ${variable}₂ = ${x2.toFixed(2)}`);
+      }
+
+      // Adicionar ao histórico
+      const newHistory = [`${expression} → ${result}`, ...history];
+      setHistory(newHistory.slice(0, 10)); // Manter apenas os 10 mais recentes
+      
+    } catch (err) {
+      setError("Error calculating the equation. Please check your expression.");
+      console.error("Calculation error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const clearHistory = () => {
@@ -122,7 +150,9 @@ export default function QuadraticFormula() {
     "2x² - 4x - 6",
     "x² - 9",
     "3x² + 7x + 2",
-    "x² + 4x + 4"
+    "x² + 4x + 4",
+    "y² - 5y + 6 = 0",
+    "2a² + 4a - 16 = 0"
   ];
 
   const useExample = (example: string) => {
@@ -159,15 +189,19 @@ export default function QuadraticFormula() {
           <div className="modal">
             <div className="modal-content">
               <h3>Calculation History</h3>
-              <ul>
-                {history.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-              {history.length > 0 && (
-                <button className="clear-history-btn" onClick={clearHistory}>
-                  Clear History
-                </button>
+              {history.length === 0 ? (
+                <p>No history yet</p>
+              ) : (
+                <>
+                  <ul>
+                    {history.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                  <button className="clear-history-btn" onClick={clearHistory}>
+                    Clear History
+                  </button>
+                </>
               )}
               <button className="close-modal-btn" onClick={() => setShowHistory(false)}>
                 Close
@@ -213,8 +247,9 @@ export default function QuadraticFormula() {
           type="button" 
           className="calculate-btn" 
           onClick={handleCompute}
+          disabled={isLoading}
         >
-          Compute
+          {isLoading ? "Calculating..." : "Compute"}
         </button>
 
         {error && <p className="error">{error}</p>}
