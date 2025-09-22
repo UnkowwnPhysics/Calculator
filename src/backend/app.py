@@ -5,6 +5,8 @@ from loginbox import validate_login
 import math
 import re
 import cmath
+import numpy as np
+import json
 
 app = FastAPI()
 
@@ -23,6 +25,9 @@ class LoginRequest(BaseModel):
 
 class CalculationRequest(BaseModel):
     expression: str
+
+class EigenRequest(BaseModel):
+    matrix: str
 
 # Funções trigonométricas seguras
 def safe_sin(x): return math.sin(x) if abs(math.sin(x)) >= 1e-10 else 0.0
@@ -95,6 +100,16 @@ def safe_eval(expression: str):
 
     return result
 
+def parse_matrix(matrix_str: str):
+    """Converte string da matriz para numpy array"""
+    try:
+        # Remove espaços e converte para lista Python
+        matrix_str = matrix_str.strip()
+        matrix_list = json.loads(matrix_str)
+        return np.array(matrix_list, dtype=complex)
+    except Exception as e:
+        raise ValueError(f"Formato de matriz inválido: {str(e)}")
+
 @app.post("/login")
 def login(req: LoginRequest):
     return validate_login(req.email, req.password)
@@ -107,10 +122,52 @@ def calculate(req: CalculationRequest):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+@app.post("/eigen")
+def calculate_eigen(req: EigenRequest):
+    try:
+        matrix = parse_matrix(req.matrix)
+        
+        # Calcula autovalores e autovetores
+        eigenvalues, eigenvectors = np.linalg.eig(matrix)
+        
+        # Formata os resultados
+        def format_complex(num):
+            real = num.real
+            imag = num.imag
+            if abs(real) < 1e-10: real = 0
+            if abs(imag) < 1e-10: imag = 0
+            
+            if imag == 0:
+                return f"{real:.6g}"
+            elif real == 0:
+                return f"{imag:.6g}i"
+            else:
+                sign = "+" if imag >= 0 else ""
+                return f"{real:.6g}{sign}{imag:.6g}i"
+
+        formatted_eigenvalues = [format_complex(val) for val in eigenvalues]
+        
+        formatted_eigenvectors = []
+        for i in range(eigenvectors.shape[1]):
+            vector = [format_complex(val) for val in eigenvectors[:, i]]
+            formatted_eigenvectors.append(vector)
+
+        return {
+            "success": True,
+            "eigenvalues": formatted_eigenvalues,
+            "eigenvectors": formatted_eigenvectors
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 @app.options("/login")
 async def options_login():
     return {"allow": "POST"}
 
 @app.options("/calculate")
 async def options_calculate():
+    return {"allow": "POST"}
+
+@app.options("/eigen")
+async def options_eigen():
     return {"allow": "POST"}
