@@ -89,6 +89,11 @@ const Eigen: React.FC = () => {
         setShowHistory(false);
     };
 
+    const clearHistory = () => {
+        setHistory([]);
+        localStorage.removeItem('eigenHistory');
+    };
+
     const validateMatrix = (matrixStr: string): boolean => {
         try {
             const parsed = JSON.parse(matrixStr);
@@ -137,7 +142,14 @@ const Eigen: React.FC = () => {
 
             {showHistory && (
                 <div className="history-section">
-                    <h3>History</h3>
+                    <div className="history-header">
+                        <h3>History</h3>
+                        {history.length > 0 && (
+                            <button className="clear-history-btn" onClick={clearHistory}>
+                                Clear History
+                            </button>
+                        )}
+                    </div>
                     {history.length === 0 ? (
                         <p>Empty</p>
                     ) : (
