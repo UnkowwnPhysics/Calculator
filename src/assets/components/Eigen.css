@@ -1,1 +1,134 @@
 
+.eigen-calculator {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.back-button {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.back-button:hover {
+    background: #545b62;
+}
+
+.input-section {
+    margin-bottom: 20px;
+}
+
+.input-section textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: monospace;
+    resize: vertical;
+}
+
+.input-section button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.input-section button:hover {
+    background: #0056b3;
+}
+
+.action-buttons {
+    margin-bottom: 20px;
+}
+
+.action-buttons button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.action-buttons button:hover {
+    background: #1e7e34;
+}
+
+.history-section, .examples-section, .results-section, .error-section {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.history-item, .example-card {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.history-item:hover, .example-card:hover {
+    background-color: #f8f9fa;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.example-card {
+    text-align: center;
+}
+
+.example-card h4 {
+    margin: 0 0 10px 0;
+    color: #007bff;
+}
+
+.eigenvalues ul {
+    list-style: none;
+    padding: 0;
+}
+
+.eigenvalues li {
+    padding: 5px 0;
+    font-family: monospace;
+}
+
+.eigenvector {
+    font-family: monospace;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 3px;
+}
+
+.error-section {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+@media (max-width: 600px) {
+    .eigen-calculator {
+        padding: 10px;
+    }
+    
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+}
