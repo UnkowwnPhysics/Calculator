@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import './Eigen.css';
 
+interface HistoryItem {
+    matrix: string;
+    eigenvalues: string[];
+    eigenvectors: string[][];
+    timestamp: string;
+}
+
 const Eigen: React.FC = () => {
     const [matrix, setMatrix] = useState<string>('[[1,2],[3,4]]');
     const [eigenvalues, setEigenvalues] = useState<string[]>([]);
     const [eigenvectors, setEigenvectors] = useState<string[][]>([]);
     const [error, setError] = useState<string>('');
-    const [history, setHistory] = useState<any[]>([]);
+    const [history, setHistory] = useState<HistoryItem[]>([]);
     const [showHistory, setShowHistory] = useState<boolean>(false);
     const [showExamples, setShowExamples] = useState<boolean>(false);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
@@ -20,7 +27,14 @@ const Eigen: React.FC = () => {
 
     useEffect(() => {
         const savedHistory = localStorage.getItem('eigenHistory');
-        if (savedHistory) setHistory(JSON.parse(savedHistory));
+        if (savedHistory) {
+            try {
+                setHistory(JSON.parse(savedHistory));
+            } catch (e) {
+                console.error('Error parsing history:', e);
+                localStorage.removeItem('eigenHistory');
+            }
+        }
     }, []);
 
     const calculateEigen = async () => {
@@ -28,7 +42,6 @@ const Eigen: React.FC = () => {
         setError('');
         
         try {
-            // Production backend URL
             const backendUrl = 'https://calculator-b9q5.onrender.com';
             
             const response = await fetch(`${backendUrl}/eigen`, {
@@ -41,21 +54,20 @@ const Eigen: React.FC = () => {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
 
             if (data.success) {
-                setEigenvalues(data.eigenvalues);
-                setEigenvectors(data.eigenvectors);
+                setEigenvalues(data.eigenvalues || []);
+                setEigenvectors(data.eigenvectors || []);
                 setError('');
 
-                const newHistoryItem = {
+                const newHistoryItem: HistoryItem = {
                     matrix,
-                    eigenvalues: data.eigenvalues,
-                    eigenvectors: data.eigenvectors,
+                    eigenvalues: data.eigenvalues || [],
+                    eigenvectors: data.eigenvectors || [],
                     timestamp: new Date().toLocaleString()
                 };
 
@@ -76,12 +88,12 @@ const Eigen: React.FC = () => {
         }
     };
 
-    const loadExample = (m: string) => {
-        setMatrix(m);
+    const loadExample = (exampleMatrix: string) => {
+        setMatrix(exampleMatrix);
         setError('');
     };
 
-    const loadHistoryItem = (item: any) => {
+    const loadHistoryItem = (item: HistoryItem) => {
         setMatrix(item.matrix);
         setEigenvalues(item.eigenvalues);
         setEigenvectors(item.eigenvectors);
@@ -98,7 +110,7 @@ const Eigen: React.FC = () => {
         try {
             const parsed = JSON.parse(matrixStr);
             return Array.isArray(parsed) && 
-                   parsed.every(row => Array.isArray(row)) &&
+                   parsed.every((row: any) => Array.isArray(row)) &&
                    parsed.length > 0 &&
                    parsed[0].length === parsed.length;
         } catch {
@@ -151,7 +163,7 @@ const Eigen: React.FC = () => {
                         )}
                     </div>
                     {history.length === 0 ? (
-                        <p>Empty</p>
+                        <p>No history yet</p>
                     ) : (
                         history.map((item, i) => (
                             <div key={i} className="history-item" onClick={() => loadHistoryItem(item)}>
