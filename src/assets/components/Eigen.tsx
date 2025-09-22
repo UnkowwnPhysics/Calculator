@@ -1,174 +1,192 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import './Eigen.css';
 
-interface Example {
-  name: string;
-  matrix: string;
-  description: string;
-}
+const Eigen: React.FC = () => {
+    const [matrix, setMatrix] = useState<string>('[[1,2],[3,4]]');
+    const [eigenvalues, setEigenvalues] = useState<string[]>([]);
+    const [eigenvectors, setEigenvectors] = useState<string[][]>([]);
+    const [error, setError] = useState<string>('');
+    const [history, setHistory] = useState<any[]>([]);
+    const [showHistory, setShowHistory] = useState<boolean>(false);
+    const [showExamples, setShowExamples] = useState<boolean>(false);
 
-const examples: Example[] = [
-  {
-    name: "Diagonal Matrix",
-    matrix: "1 0 0\n0 2 0\n0 0 3",
-    description: "Simple diagonal matrix with eigenvalues on the diagonal.",
-  },
-  {
-    name: "Symmetric Matrix",
-    matrix: "2 1\n1 2",
-    description: "Symmetric 2x2 matrix with real eigenvalues.",
-  },
-  {
-    name: "Rotation Matrix",
-    matrix: "0 -1\n1 0",
-    description: "2D rotation matrix, eigenvalues are complex.",
-  },
-];
+    const examples = [
+        {
+            name: "Matriz 2x2 Simétrica",
+            matrix: "[[1,2],[2,1]]",
+            description: "Autovalores reais para matriz simétrica"
+        },
+        {
+            name: "Matriz Rotação 2D",
+            matrix: "[[0,-1],[1,0]]",
+            description: "Autovalores complexos - rotação pura"
+        },
+        {
+            name: "Sistema Massa-Mola",
+            matrix: "[[2,-1],[-1,2]]",
+            description: "Modos normais de vibração"
+        },
+        {
+            name: "Matriz Diagonal",
+            matrix: "[[3,0],[0,5]]",
+            description: "Autovalores na diagonal"
+        }
+    ];
 
-interface EigenResult {
-  eigenvalues: number[];
-  eigenvectors: number[][];
-}
+    useEffect(() => {
+        const savedHistory = localStorage.getItem('eigenHistory');
+        if (savedHistory) {
+            setHistory(JSON.parse(savedHistory));
+        }
+    }, []);
 
-const EigenCalculator: React.FC = () => {
-  const [matrix, setMatrix] = useState<string>("");
-  const [result, setResult] = useState<EigenResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useState<string[]>([]);
-  const [showHistory, setShowHistory] = useState<boolean>(false);
-  const [showExamples, setShowExamples] = useState<boolean>(false);
+    const calculateEigen = async () => {
+        try {
+            const response = await fetch(`${window.location.origin}/eigen`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ matrix }),
+            });
 
-  const calculateEigen = async () => {
-    try {
-      setError(null);
-      setResult(null);
+            const data = await response.json();
 
-      const response = await fetch(`${window.location.origin}/eigen`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matrix }),
-      });
+            if (data.success) {
+                setEigenvalues(data.eigenvalues);
+                setEigenvectors(data.eigenvectors);
+                setError('');
 
-      if (!response.ok) {
-        throw new Error("Erro ao calcular autovalores e autovetores.");
-      }
+                // salvar histórico
+                const newHistoryItem = {
+                    matrix,
+                    eigenvalues: data.eigenvalues,
+                    eigenvectors: data.eigenvectors,
+                    timestamp: new Date().toLocaleString()
+                };
+                const newHistory = [newHistoryItem, ...history.slice(0, 9)];
+                setHistory(newHistory);
+                localStorage.setItem('eigenHistory', JSON.stringify(newHistory));
+            } else {
+                setError(data.error);
+                setEigenvalues([]);
+                setEigenvectors([]);
+            }
+        } catch (err) {
+            setError('Erro de conexão com o servidor');
+            setEigenvalues([]);
+            setEigenvectors([]);
+        }
+    };
 
-      const data: EigenResult = await response.json();
-      setResult(data);
+    const loadExample = (exampleMatrix: string) => {
+        setMatrix(exampleMatrix);
+        setError('');
+    };
 
-      // Atualiza histórico (máximo 5 itens)
-      setHistory((prev) => [matrix, ...prev.slice(0, 4)]);
-    } catch (err) {
-      setError("Erro de conexão com o servidor.");
-    }
-  };
+    const loadHistoryItem = (item: any) => {
+        setMatrix(item.matrix);
+        setEigenvalues(item.eigenvalues);
+        setEigenvectors(item.eigenvectors);
+        setError('');
+        setShowHistory(false);
+    };
 
-  const loadExample = (exampleMatrix: string) => {
-    setMatrix(exampleMatrix);
-    setResult(null);
-    setError(null);
-  };
+    return (
+        <div className="eigen-calculator">
+            <button className="back-button" onClick={() => window.history.back()}>
+                ← Back to Dashboard
+            </button>
 
-  return (
-    <div className="eigen-calculator">
-      <button
-        className="back-button"
-        onClick={() => (window.location.href = "/")}
-      >
-        Back to Dashboard
-      </button>
+            <h1>Eigenvalues & Eigenvectors Calculator</h1>
 
-      <h2 style={{ color: "white", marginBottom: "20px" }}>
-        Eigenvalue & Eigenvector Calculator
-      </h2>
+            <div className="input-section">
+                <textarea
+                    value={matrix}
+                    onChange={(e) => setMatrix(e.target.value)}
+                    placeholder="Enter matrix in JSON format e.g., [[1,2],[3,4]]"
+                    rows={4}
+                />
+                <button onClick={calculateEigen}>Calculate</button>
+            </div>
 
-      {/* Botões extras */}
-      <div className="action-buttons">
-        <button onClick={() => setShowHistory(!showHistory)}>
-          {showHistory ? "Hide History" : "Show History"}
-        </button>
-        <button onClick={() => setShowExamples(!showExamples)}>
-          {showExamples ? "Hide Examples" : "Show Examples"}
-        </button>
-      </div>
+            <div className="action-buttons">
+                <button onClick={() => setShowHistory(!showHistory)}>
+                    {showHistory ? 'Hide History' : 'Show History'}
+                </button>
+                <button onClick={() => setShowExamples(!showExamples)}>
+                    {showExamples ? 'Hide Examples' : 'Show Examples'}
+                </button>
+            </div>
 
-      {/* Entrada */}
-      <div className="input-section">
-        <textarea
-          rows={5}
-          value={matrix}
-          onChange={(e) => setMatrix(e.target.value)}
-          placeholder="Enter matrix rows separated by newlines (e.g. '1 2\n3 4')"
-        />
-        <button onClick={calculateEigen}>Calculate</button>
-      </div>
+            {showHistory && (
+                <div className="history-section">
+                    <h3>Calculation History</h3>
+                    {history.length === 0 ? (
+                        <p>No history yet</p>
+                    ) : (
+                        history.map((item, index) => (
+                            <div key={index} className="history-item" onClick={() => loadHistoryItem(item)}>
+                                <div><strong>Matrix:</strong> {item.matrix}</div>
+                                <div><strong>Eigenvalues:</strong> {item.eigenvalues.join(', ')}</div>
+                                <small>{item.timestamp}</small>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
 
-      {/* Histórico */}
-      {showHistory && (
-        <div className="history-section">
-          <h3>History</h3>
-          {history.length === 0 ? (
-            <p>No history yet.</p>
-          ) : (
-            history.map((item, index) => (
-              <div
-                key={index}
-                className="history-item"
-                onClick={() => loadExample(item)}
-              >
-                <pre>{item}</pre>
-              </div>
-            ))
-          )}
+            {showExamples && (
+                <div className="examples-section">
+                    <h3>Examples</h3>
+                    <div className="examples-grid">
+                        {examples.map((example, index) => (
+                            <div key={index} className="example-card" onClick={() => loadExample(example.matrix)}>
+                                <h4>{example.name}</h4>
+                                <p>{example.matrix}</p>
+                                <small>{example.description}</small>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {error && (
+                <div className="error-section">
+                    <h3>Error</h3>
+                    <p>{error}</p>
+                </div>
+            )}
+
+            {eigenvalues.length > 0 && (
+                <div className="results-section">
+                    <h3>Results</h3>
+                    <div className="eigenvalues">
+                        <h4>Eigenvalues:</h4>
+                        <ul>
+                            {eigenvalues.map((val, index) => (
+                                <li key={index}>λ{index + 1} = {val}</li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="eigenvectors">
+                        <h4>Eigenvectors:</h4>
+                        {eigenvectors.map((vector, index) => (
+                            <div key={index} className="eigenvector">
+                                <span>v{index + 1} = [</span>
+                                {vector.map((comp, compIndex) => (
+                                    <span key={compIndex}>
+                                        {comp}
+                                        {compIndex < vector.length - 1 ? ', ' : ''}
+                                    </span>
+                                ))}
+                                <span>]</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-
-      {/* Exemplos */}
-      {showExamples && (
-        <div className="examples-section">
-          <h3>Examples</h3>
-          <div className="examples-grid">
-            {examples.map((example, index) => (
-              <div
-                key={index}
-                className="example-card"
-                onClick={() => loadExample(example.matrix)}
-              >
-                <h4>{example.name}</h4>
-                <p>{example.matrix}</p>
-                <small>{example.description}</small>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Resultados */}
-      {result && (
-        <div className="results-section">
-          <h3>Results</h3>
-          <div className="eigenvalues">
-            <h4>Eigenvalues:</h4>
-            <ul>
-              {result.eigenvalues.map((val, i) => (
-                <li key={i}>{val}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="eigenvectors">
-            <h4>Eigenvectors:</h4>
-            {result.eigenvectors.map((vec, i) => (
-              <div key={i} className="eigenvector">
-                [{vec.join(", ")}]
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Erro */}
-      {error && <div className="error-section">{error}</div>}
-    </div>
-  );
+    );
 };
 
-export default EigenCalculator;
+export default Eigen;
