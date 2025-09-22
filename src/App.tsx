@@ -7,6 +7,7 @@ import BasicCalculator from "./assets/components/BasicCalculator";
 import ScientificCalculator from './assets/components/ScientificCalculator';
 import Matrix from './assets/components/Matrix'; 
 import QuadraticFormula from './assets/components/QuadraticFormula';
+import Eigen from './assets/components/Eigen';
 
 // Adicione uma verificação simples de autenticação
 const isAuthenticated = () => {
@@ -73,6 +74,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <QuadraticFormula />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/eigen-calculator" 
+          element={
+            <ProtectedRoute>
+              <Eigen />
             </ProtectedRoute>
           } 
         />
