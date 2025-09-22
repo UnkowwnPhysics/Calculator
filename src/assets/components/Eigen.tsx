@@ -24,11 +24,23 @@ const Eigen: React.FC = () => {
 
     const calculateEigen = async () => {
         try {
-            const response = await fetch(`${window.location.origin}/eigen`, {
+            // URL corrigida - verifica se estamos em desenvolvimento ou produção
+            const backendUrl = process.env.NODE_ENV === 'development' 
+                ? 'http://localhost:8000' 
+                : window.location.origin;
+
+            const response = await fetch(`${backendUrl}/eigen`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify({ matrix }),
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             const data = await response.json();
 
@@ -48,12 +60,13 @@ const Eigen: React.FC = () => {
                 setHistory(newHistory);
                 localStorage.setItem('eigenHistory', JSON.stringify(newHistory));
             } else {
-                setError(data.error);
+                setError(data.error || 'Erro desconhecido');
                 setEigenvalues([]);
                 setEigenvectors([]);
             }
-        } catch {
-            setError('Erro de conexão com o servidor');
+        } catch (error: any) {
+            console.error('Erro detalhado:', error);
+            setError(`Erro de conexão: ${error.message}`);
             setEigenvalues([]);
             setEigenvectors([]);
         }
