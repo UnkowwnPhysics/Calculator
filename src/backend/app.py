@@ -10,13 +10,13 @@ import json
 
 app = FastAPI()
 
-# Configuração CORS
+# Configuração CORS mais permissiva
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Permite todas as origens
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permite todos os métodos
+    allow_headers=["*"],  # Permite todos os headers
 )
 
 class LoginRequest(BaseModel):
@@ -125,10 +125,18 @@ def calculate(req: CalculationRequest):
 @app.post("/eigen")
 def calculate_eigen(req: EigenRequest):
     try:
+        print(f"Matriz recebida: {req.matrix}")  # Log para debug
+        
         matrix = parse_matrix(req.matrix)
+        print(f"Matriz convertida: {matrix}")   # Log para debug
+        
+        # Verifica se a matriz é quadrada
+        if matrix.shape[0] != matrix.shape[1]:
+            return {"success": False, "error": "A matriz deve ser quadrada"}
         
         # Calcula autovalores e autovetores
         eigenvalues, eigenvectors = np.linalg.eig(matrix)
+        print(f"Autovalores calculados: {eigenvalues}")  # Log para debug
         
         # Formata os resultados
         def format_complex(num):
@@ -158,7 +166,17 @@ def calculate_eigen(req: EigenRequest):
             "eigenvectors": formatted_eigenvectors
         }
     except Exception as e:
+        print(f"Erro no cálculo: {str(e)}")  # Log para debug
         return {"success": False, "error": str(e)}
+
+# Adicionar rota GET para teste
+@app.get("/")
+def read_root():
+    return {"message": "API de Cálculo de Autovalores funcionando!"}
+
+@app.get("/eigen")
+def get_eigen_test():
+    return {"message": "Endpoint eigen está funcionando!"}
 
 @app.options("/login")
 async def options_login():
@@ -171,3 +189,7 @@ async def options_calculate():
 @app.options("/eigen")
 async def options_eigen():
     return {"allow": "POST"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
