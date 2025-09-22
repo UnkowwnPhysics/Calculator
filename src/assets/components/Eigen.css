@@ -7,11 +7,16 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;
     padding: 20px;
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     text-align: center;
+    box-sizing: border-box;
 }
 
-/* Botão voltar */
+/* Reset para evitar vazamento de estilos */
+.eigen-calculator * {
+    box-sizing: border-box;
+}
+
 .back-button {
     position: absolute;
     top: 20px;
@@ -31,7 +36,6 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Seções */
 .input-section,
 .history-section,
 .examples-section,
@@ -48,11 +52,8 @@
     color: white;
 }
 
-/* Textarea corrigido */
 .input-section textarea {
     width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
     padding: 12px;
     border: none;
     border-radius: 10px;
@@ -62,13 +63,13 @@
     font-size: 1em;
     outline: none;
     resize: vertical;
+    margin-bottom: 10px;
 }
 
 .input-section textarea::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Botão calcular */
 .input-section button {
     width: 100%;
     padding: 14px;
@@ -80,14 +81,17 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 10px;
 }
 
-.input-section button:hover {
+.input-section button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.input-section button:hover:not(:disabled) {
     filter: brightness(1.1);
 }
 
-/* Botões extras */
 .action-buttons {
     display: flex;
     justify-content: center;
@@ -111,7 +115,6 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Cabeçalho do histórico */
 .history-header {
     display: flex;
     justify-content: space-between;
@@ -134,7 +137,6 @@
     background: rgba(255, 100, 100, 0.5);
 }
 
-/* Históricos / exemplos */
 .history-item,
 .example-card {
     padding: 10px;
@@ -157,7 +159,6 @@
     gap: 15px;
 }
 
-/* Resultados */
 .eigenvalues ul {
     list-style: none;
     padding: 0;
@@ -177,14 +178,12 @@
     color: white;
 }
 
-/* Erros */
 .error-section {
     background: rgba(255, 100, 100, 0.2);
-    border: 1px solid #f5c6cb;
+    border: 1px solid rgba(245, 198, 203, 0.5);
     color: #fed7d7;
 }
 
-/* Responsivo */
 @media (max-width: 600px) {
     .eigen-calculator {
         padding: 10px;
