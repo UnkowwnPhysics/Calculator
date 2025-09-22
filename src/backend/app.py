@@ -23,6 +23,64 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Função para arredondar valores muito pequenos para zero
+def round_small_values(result, threshold=1e-10):
+    """
+    Arredonda valores muito pequenos para zero, especialmente para funções trigonométricas.
+    """
+    if isinstance(result, (int, float, complex)):
+        # Para números reais
+        if isinstance(result, (int, float)):
+            if abs(result) < threshold:
+                return 0
+        # Para números complexos
+        elif isinstance(result, complex):
+            real = result.real
+            imag = result.imag
+            if abs(real) < threshold:
+                real = 0
+            if abs(imag) < threshold:
+                imag = 0
+            return complex(real, imag)
+    return result
+
+# Wrappers para funções trigonométricas com arredondamento
+def safe_sin(x):
+    return round_small_values(math.sin(x))
+
+def safe_cos(x):
+    return round_small_values(math.cos(x))
+
+def safe_tan(x):
+    return round_small_values(math.tan(x))
+
+def safe_asin(x):
+    return round_small_values(math.asin(x))
+
+def safe_acos(x):
+    return round_small_values(math.acos(x))
+
+def safe_atan(x):
+    return round_small_values(math.atan(x))
+
+def safe_sinh(x):
+    return round_small_values(math.sinh(x))
+
+def safe_cosh(x):
+    return round_small_values(math.cosh(x))
+
+def safe_tanh(x):
+    return round_small_values(math.tanh(x))
+
+def safe_csin(x):
+    return round_small_values(cmath.sin(x))
+
+def safe_ccos(x):
+    return round_small_values(cmath.cos(x))
+
+def safe_ctan(x):
+    return round_small_values(cmath.tan(x))
+
 # Models
 class LoginRequest(BaseModel):
     email: str
@@ -44,19 +102,20 @@ def safe_eval(expr: str):
         "e": math.e,
         "i": 1j,
 
-        # funções reais
-        "sin": math.sin, "cos": math.cos, "tan": math.tan,
-        "asin": math.asin, "acos": math.acos, "atan": math.atan,
-        "sinh": math.sinh, "cosh": math.cosh, "tanh": math.tanh,
-        "log": lambda x, base=10: math.log(x, base),
-        "ln": math.log,
-        "sqrt": math.sqrt,
+        # funções reais com arredondamento
+        "sin": safe_sin, "cos": safe_cos, "tan": safe_tan,
+        "asin": safe_asin, "acos": safe_acos, "atan": safe_atan,
+        "sinh": safe_sinh, "cosh": safe_cosh, "tanh": safe_tanh,
+        "log": lambda x, base=10: round_small_values(math.log(x, base)),
+        "ln": lambda x: round_small_values(math.log(x)),
+        "sqrt": lambda x: round_small_values(math.sqrt(x)),
         "abs": abs,
-        "exp": math.exp,
+        "exp": lambda x: round_small_values(math.exp(x)),
 
-        # funções complexas
-        "csin": cmath.sin, "ccos": cmath.cos, "ctan": cmath.tan,
-        "sqrtc": cmath.sqrt, "expc": cmath.exp,
+        # funções complexas com arredondamento
+        "csin": safe_csin, "ccos": safe_ccos, "ctan": safe_ctan,
+        "sqrtc": lambda x: round_small_values(cmath.sqrt(x)), 
+        "expc": lambda x: round_small_values(cmath.exp(x)),
     }
 
     # Substituir símbolos especiais
@@ -64,10 +123,13 @@ def safe_eval(expr: str):
     expr = expr.replace("√", "sqrt")
 
     # Avaliar com restrição
-    return eval(expr, {"__builtins__": None}, allowed_names)
+    result = eval(expr, {"__builtins__": None}, allowed_names)
+    
+    # Arredondamento final para garantir
+    return round_small_values(result)
 
 
-# Endpoints
+# Endpoints (mantidos iguais)
 @app.post("/login")
 def login(req: LoginRequest):
     return {"success": True, "message": "Login successful"}
