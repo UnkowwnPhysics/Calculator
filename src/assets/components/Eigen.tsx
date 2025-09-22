@@ -9,6 +9,7 @@ const Eigen: React.FC = () => {
     const [history, setHistory] = useState<any[]>([]);
     const [showHistory, setShowHistory] = useState<boolean>(false);
     const [showExamples, setShowExamples] = useState<boolean>(false);
+    const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
     const examples = [
         { name: "Matriz 2x2 Simétrica", matrix: "[[1,2],[2,1]]", description: "Autovalores reais" },
@@ -23,11 +24,15 @@ const Eigen: React.FC = () => {
     }, []);
 
     const calculateEigen = async () => {
+        setIsCalculating(true);
+        setError('');
+        
         try {
-            // URL corrigida - verifica se estamos em desenvolvimento ou produção
-            const backendUrl = process.env.NODE_ENV === 'development' 
-                ? 'http://localhost:8000' 
-                : window.location.origin;
+            // URL do backend - ajuste conforme necessário
+            const backendUrl = 'http://localhost:8000';
+            
+            console.log('Enviando requisição para:', backendUrl);
+            console.log('Matriz:', matrix);
 
             const response = await fetch(`${backendUrl}/eigen`, {
                 method: 'POST',
@@ -38,11 +43,25 @@ const Eigen: React.FC = () => {
                 body: JSON.stringify({ matrix }),
             });
 
+            console.log('Status da resposta:', response.status);
+            console.log('Headers da resposta:', response.headers);
+
+            // Verifica se a resposta é válida
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
-            const data = await response.json();
+            // Tenta parsear o JSON
+            const responseText = await response.text();
+            console.log('Resposta bruta:', responseText);
+            
+            if (!responseText) {
+                throw new Error('Resposta vazia do servidor');
+            }
+
+            const data = JSON.parse(responseText);
+            console.log('Dados parseados:', data);
 
             if (data.success) {
                 setEigenvalues(data.eigenvalues);
@@ -60,15 +79,17 @@ const Eigen: React.FC = () => {
                 setHistory(newHistory);
                 localStorage.setItem('eigenHistory', JSON.stringify(newHistory));
             } else {
-                setError(data.error || 'Erro desconhecido');
+                setError(data.error || 'Erro desconhecido do servidor');
                 setEigenvalues([]);
                 setEigenvectors([]);
             }
         } catch (error: any) {
             console.error('Erro detalhado:', error);
-            setError(`Erro de conexão: ${error.message}`);
+            setError(`Erro: ${error.message}`);
             setEigenvalues([]);
             setEigenvectors([]);
+        } finally {
+            setIsCalculating(false);
         }
     };
 
@@ -85,6 +106,18 @@ const Eigen: React.FC = () => {
         setShowHistory(false);
     };
 
+    const validateMatrix = (matrixStr: string): boolean => {
+        try {
+            const parsed = JSON.parse(matrixStr);
+            return Array.isArray(parsed) && 
+                   parsed.every(row => Array.isArray(row)) &&
+                   parsed.length > 0 &&
+                   parsed[0].length === parsed.length;
+        } catch {
+            return false;
+        }
+    };
+
     return (
         <div className="eigen-calculator">
             <button className="back-button" onClick={() => window.history.back()}>
@@ -97,16 +130,25 @@ const Eigen: React.FC = () => {
                     onChange={(e) => setMatrix(e.target.value)}
                     placeholder="Ex: [[1,2],[3,4]]"
                     rows={4}
+                    className={!validateMatrix(matrix) ? 'invalid' : ''}
                 />
-                <button onClick={calculateEigen}>Compute</button>
+                <button 
+                    onClick={calculateEigen} 
+                    disabled={isCalculating || !validateMatrix(matrix)}
+                >
+                    {isCalculating ? 'Calculating...' : 'Compute'}
+                </button>
+                {!validateMatrix(matrix) && (
+                    <small style={{color: 'red'}}>Formato inválido. Use: [[1,2],[3,4]]</small>
+                )}
             </div>
 
             <div className="action-buttons">
                 <button onClick={() => setShowHistory(!showHistory)}>
-                    {showHistory ? 'Esconder Histórico' : 'History'}
+                    {showHistory ? 'Hide History' : 'Show History'}
                 </button>
                 <button onClick={() => setShowExamples(!showExamples)}>
-                    {showExamples ? 'Esconder Exemplos' : 'Examples'}
+                    {showExamples ? 'Hide Examples' : 'Show Examples'}
                 </button>
             </div>
 
@@ -118,7 +160,7 @@ const Eigen: React.FC = () => {
                     ) : (
                         history.map((item, i) => (
                             <div key={i} className="history-item" onClick={() => loadHistoryItem(item)}>
-                                <div><strong>Matriz:</strong> {item.matrix}</div>
+                                <div><strong>Matrix:</strong> {item.matrix}</div>
                                 <div><strong>λ:</strong> {item.eigenvalues.join(', ')}</div>
                                 <small>{item.timestamp}</small>
                             </div>
