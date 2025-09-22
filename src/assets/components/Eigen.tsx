@@ -28,12 +28,9 @@ const Eigen: React.FC = () => {
         setError('');
         
         try {
-            // URL do backend - ajuste conforme necessário
-            const backendUrl = 'http://localhost:8000';
+            // URL do backend em produção
+            const backendUrl = 'https://calculator-b9q5.onrender.com';
             
-            console.log('Enviando requisição para:', backendUrl);
-            console.log('Matriz:', matrix);
-
             const response = await fetch(`${backendUrl}/eigen`, {
                 method: 'POST',
                 headers: { 
@@ -43,25 +40,12 @@ const Eigen: React.FC = () => {
                 body: JSON.stringify({ matrix }),
             });
 
-            console.log('Status da resposta:', response.status);
-            console.log('Headers da resposta:', response.headers);
-
-            // Verifica se a resposta é válida
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
-            // Tenta parsear o JSON
-            const responseText = await response.text();
-            console.log('Resposta bruta:', responseText);
-            
-            if (!responseText) {
-                throw new Error('Resposta vazia do servidor');
-            }
-
-            const data = JSON.parse(responseText);
-            console.log('Dados parseados:', data);
+            const data = await response.json();
 
             if (data.success) {
                 setEigenvalues(data.eigenvalues);
@@ -84,7 +68,6 @@ const Eigen: React.FC = () => {
                 setEigenvectors([]);
             }
         } catch (error: any) {
-            console.error('Erro detalhado:', error);
             setError(`Erro: ${error.message}`);
             setEigenvalues([]);
             setEigenvectors([]);
