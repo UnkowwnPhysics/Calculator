@@ -111,6 +111,29 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* Cabeçalho do histórico */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.clear-history-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 100, 100, 0.3);
+    color: #ffcccc;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s;
+}
+
+.clear-history-btn:hover {
+    background: rgba(255, 100, 100, 0.5);
+}
+
 /* Históricos / exemplos */
 .history-item,
 .example-card {
@@ -169,5 +192,10 @@
 
     .examples-grid {
         grid-template-columns: 1fr;
+    }
+
+    .history-header {
+        flex-direction: column;
+        gap: 10px;
     }
 }
