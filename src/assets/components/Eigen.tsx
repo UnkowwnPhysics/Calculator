@@ -78,8 +78,6 @@ const Eigen: React.FC = () => {
                 ← Back to Dashboard
             </button>
 
-            <h1>Eigenvalues & Eigenvectors Calculator</h1>
-
             <div className="input-section">
                 <textarea
                     value={matrix}
@@ -87,23 +85,23 @@ const Eigen: React.FC = () => {
                     placeholder="Ex: [[1,2],[3,4]]"
                     rows={4}
                 />
-                <button onClick={calculateEigen}>Calcular</button>
+                <button onClick={calculateEigen}>Compute</button>
             </div>
 
             <div className="action-buttons">
                 <button onClick={() => setShowHistory(!showHistory)}>
-                    {showHistory ? 'Esconder Histórico' : 'Mostrar Histórico'}
+                    {showHistory ? 'Esconder Histórico' : 'History'}
                 </button>
                 <button onClick={() => setShowExamples(!showExamples)}>
-                    {showExamples ? 'Esconder Exemplos' : 'Mostrar Exemplos'}
+                    {showExamples ? 'Esconder Exemplos' : 'Examples'}
                 </button>
             </div>
 
             {showHistory && (
                 <div className="history-section">
-                    <h3>Histórico</h3>
+                    <h3>History</h3>
                     {history.length === 0 ? (
-                        <p>Sem histórico ainda</p>
+                        <p>Empty</p>
                     ) : (
                         history.map((item, i) => (
                             <div key={i} className="history-item" onClick={() => loadHistoryItem(item)}>
@@ -118,7 +116,7 @@ const Eigen: React.FC = () => {
 
             {showExamples && (
                 <div className="examples-section">
-                    <h3>Exemplos</h3>
+                    <h3>Examples</h3>
                     <div className="examples-grid">
                         {examples.map((ex, i) => (
                             <div key={i} className="example-card" onClick={() => loadExample(ex.matrix)}>
@@ -133,16 +131,16 @@ const Eigen: React.FC = () => {
 
             {error && (
                 <div className="error-section">
-                    <h3>Erro</h3>
+                    <h3>Error</h3>
                     <p>{error}</p>
                 </div>
             )}
 
             {eigenvalues.length > 0 && (
                 <div className="results-section">
-                    <h3>Resultados</h3>
+                    <h3>Results</h3>
                     <div className="eigenvalues">
-                        <h4>Autovalores:</h4>
+                        <h4>Eigenvalues:</h4>
                         <ul>
                             {eigenvalues.map((val, i) => (
                                 <li key={i}>λ{i + 1} = {val}</li>
@@ -151,7 +149,7 @@ const Eigen: React.FC = () => {
                     </div>
 
                     <div className="eigenvectors">
-                        <h4>Autovetores:</h4>
+                        <h4>Eigenvectors:</h4>
                         {eigenvectors.map((vec, i) => (
                             <div key={i} className="eigenvector">
                                 v{i + 1} = [{vec.join(', ')}]
