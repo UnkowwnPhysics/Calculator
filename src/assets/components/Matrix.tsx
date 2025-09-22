@@ -432,7 +432,7 @@ const MatrixCalculator: React.FC = () => {
               <option value="inverse">Inverse of A</option>
             </select>
             <button className="calculate-btn" onClick={performOperation}>
-              Calculate
+              Compute
             </button>
           </div>
 
