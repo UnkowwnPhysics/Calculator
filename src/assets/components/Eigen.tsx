@@ -12,10 +12,10 @@ const Eigen: React.FC = () => {
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
     const examples = [
-        { name: "Matriz 2x2 Simétrica", matrix: "[[1,2],[2,1]]", description: "Autovalores reais" },
-        { name: "Matriz Rotação 2D", matrix: "[[0,-1],[1,0]]", description: "Autovalores complexos" },
-        { name: "Sistema Massa-Mola", matrix: "[[2,-1],[-1,2]]", description: "Modos de vibração" },
-        { name: "Matriz Diagonal", matrix: "[[3,0],[0,5]]", description: "Autovalores diretos" }
+        { name: "Symmetric 2x2 Matrix", matrix: "[[1,2],[2,1]]", description: "Real eigenvalues" },
+        { name: "2D Rotation Matrix", matrix: "[[0,-1],[1,0]]", description: "Complex eigenvalues" },
+        { name: "Mass-Spring System", matrix: "[[2,-1],[-1,2]]", description: "Vibration modes" },
+        { name: "Diagonal Matrix", matrix: "[[3,0],[0,5]]", description: "Direct eigenvalues" }
     ];
 
     useEffect(() => {
@@ -28,7 +28,7 @@ const Eigen: React.FC = () => {
         setError('');
         
         try {
-            // URL do backend em produção
+            // Production backend URL
             const backendUrl = 'https://calculator-b9q5.onrender.com';
             
             const response = await fetch(`${backendUrl}/eigen`, {
@@ -63,12 +63,12 @@ const Eigen: React.FC = () => {
                 setHistory(newHistory);
                 localStorage.setItem('eigenHistory', JSON.stringify(newHistory));
             } else {
-                setError(data.error || 'Erro desconhecido do servidor');
+                setError(data.error || 'Unknown server error');
                 setEigenvalues([]);
                 setEigenvectors([]);
             }
         } catch (error: any) {
-            setError(`Erro: ${error.message}`);
+            setError(`Error: ${error.message}`);
             setEigenvalues([]);
             setEigenvectors([]);
         } finally {
@@ -122,7 +122,7 @@ const Eigen: React.FC = () => {
                     {isCalculating ? 'Calculating...' : 'Compute'}
                 </button>
                 {!validateMatrix(matrix) && (
-                    <small style={{color: 'red'}}>Formato inválido. Use: [[1,2],[3,4]]</small>
+                    <small style={{color: 'red'}}>Invalid format. Use: [[1,2],[3,4]]</small>
                 )}
             </div>
 
