@@ -11,33 +11,15 @@ const Eigen: React.FC = () => {
     const [showExamples, setShowExamples] = useState<boolean>(false);
 
     const examples = [
-        {
-            name: "Matriz 2x2 Simétrica",
-            matrix: "[[1,2],[2,1]]",
-            description: "Autovalores reais para matriz simétrica"
-        },
-        {
-            name: "Matriz Rotação 2D",
-            matrix: "[[0,-1],[1,0]]",
-            description: "Autovalores complexos - rotação pura"
-        },
-        {
-            name: "Sistema Massa-Mola",
-            matrix: "[[2,-1],[-1,2]]",
-            description: "Modos normais de vibração"
-        },
-        {
-            name: "Matriz Diagonal",
-            matrix: "[[3,0],[0,5]]",
-            description: "Autovalores na diagonal"
-        }
+        { name: "Matriz 2x2 Simétrica", matrix: "[[1,2],[2,1]]", description: "Autovalores reais" },
+        { name: "Matriz Rotação 2D", matrix: "[[0,-1],[1,0]]", description: "Autovalores complexos" },
+        { name: "Sistema Massa-Mola", matrix: "[[2,-1],[-1,2]]", description: "Modos de vibração" },
+        { name: "Matriz Diagonal", matrix: "[[3,0],[0,5]]", description: "Autovalores diretos" }
     ];
 
     useEffect(() => {
         const savedHistory = localStorage.getItem('eigenHistory');
-        if (savedHistory) {
-            setHistory(JSON.parse(savedHistory));
-        }
+        if (savedHistory) setHistory(JSON.parse(savedHistory));
     }, []);
 
     const calculateEigen = async () => {
@@ -55,13 +37,13 @@ const Eigen: React.FC = () => {
                 setEigenvectors(data.eigenvectors);
                 setError('');
 
-                // salvar histórico
                 const newHistoryItem = {
                     matrix,
                     eigenvalues: data.eigenvalues,
                     eigenvectors: data.eigenvectors,
                     timestamp: new Date().toLocaleString()
                 };
+
                 const newHistory = [newHistoryItem, ...history.slice(0, 9)];
                 setHistory(newHistory);
                 localStorage.setItem('eigenHistory', JSON.stringify(newHistory));
@@ -70,15 +52,15 @@ const Eigen: React.FC = () => {
                 setEigenvalues([]);
                 setEigenvectors([]);
             }
-        } catch (err) {
+        } catch {
             setError('Erro de conexão com o servidor');
             setEigenvalues([]);
             setEigenvectors([]);
         }
     };
 
-    const loadExample = (exampleMatrix: string) => {
-        setMatrix(exampleMatrix);
+    const loadExample = (m: string) => {
+        setMatrix(m);
         setError('');
     };
 
@@ -102,31 +84,31 @@ const Eigen: React.FC = () => {
                 <textarea
                     value={matrix}
                     onChange={(e) => setMatrix(e.target.value)}
-                    placeholder="Enter matrix in JSON format e.g., [[1,2],[3,4]]"
+                    placeholder="Ex: [[1,2],[3,4]]"
                     rows={4}
                 />
-                <button onClick={calculateEigen}>Calculate</button>
+                <button onClick={calculateEigen}>Calcular</button>
             </div>
 
             <div className="action-buttons">
                 <button onClick={() => setShowHistory(!showHistory)}>
-                    {showHistory ? 'Hide History' : 'Show History'}
+                    {showHistory ? 'Esconder Histórico' : 'Mostrar Histórico'}
                 </button>
                 <button onClick={() => setShowExamples(!showExamples)}>
-                    {showExamples ? 'Hide Examples' : 'Show Examples'}
+                    {showExamples ? 'Esconder Exemplos' : 'Mostrar Exemplos'}
                 </button>
             </div>
 
             {showHistory && (
                 <div className="history-section">
-                    <h3>Calculation History</h3>
+                    <h3>Histórico</h3>
                     {history.length === 0 ? (
-                        <p>No history yet</p>
+                        <p>Sem histórico ainda</p>
                     ) : (
-                        history.map((item, index) => (
-                            <div key={index} className="history-item" onClick={() => loadHistoryItem(item)}>
-                                <div><strong>Matrix:</strong> {item.matrix}</div>
-                                <div><strong>Eigenvalues:</strong> {item.eigenvalues.join(', ')}</div>
+                        history.map((item, i) => (
+                            <div key={i} className="history-item" onClick={() => loadHistoryItem(item)}>
+                                <div><strong>Matriz:</strong> {item.matrix}</div>
+                                <div><strong>λ:</strong> {item.eigenvalues.join(', ')}</div>
                                 <small>{item.timestamp}</small>
                             </div>
                         ))
@@ -136,13 +118,13 @@ const Eigen: React.FC = () => {
 
             {showExamples && (
                 <div className="examples-section">
-                    <h3>Examples</h3>
+                    <h3>Exemplos</h3>
                     <div className="examples-grid">
-                        {examples.map((example, index) => (
-                            <div key={index} className="example-card" onClick={() => loadExample(example.matrix)}>
-                                <h4>{example.name}</h4>
-                                <p>{example.matrix}</p>
-                                <small>{example.description}</small>
+                        {examples.map((ex, i) => (
+                            <div key={i} className="example-card" onClick={() => loadExample(ex.matrix)}>
+                                <h4>{ex.name}</h4>
+                                <p>{ex.matrix}</p>
+                                <small>{ex.description}</small>
                             </div>
                         ))}
                     </div>
@@ -151,35 +133,28 @@ const Eigen: React.FC = () => {
 
             {error && (
                 <div className="error-section">
-                    <h3>Error</h3>
+                    <h3>Erro</h3>
                     <p>{error}</p>
                 </div>
             )}
 
             {eigenvalues.length > 0 && (
                 <div className="results-section">
-                    <h3>Results</h3>
+                    <h3>Resultados</h3>
                     <div className="eigenvalues">
-                        <h4>Eigenvalues:</h4>
+                        <h4>Autovalores:</h4>
                         <ul>
-                            {eigenvalues.map((val, index) => (
-                                <li key={index}>λ{index + 1} = {val}</li>
+                            {eigenvalues.map((val, i) => (
+                                <li key={i}>λ{i + 1} = {val}</li>
                             ))}
                         </ul>
                     </div>
 
                     <div className="eigenvectors">
-                        <h4>Eigenvectors:</h4>
-                        {eigenvectors.map((vector, index) => (
-                            <div key={index} className="eigenvector">
-                                <span>v{index + 1} = [</span>
-                                {vector.map((comp, compIndex) => (
-                                    <span key={compIndex}>
-                                        {comp}
-                                        {compIndex < vector.length - 1 ? ', ' : ''}
-                                    </span>
-                                ))}
-                                <span>]</span>
+                        <h4>Autovetores:</h4>
+                        {eigenvectors.map((vec, i) => (
+                            <div key={i} className="eigenvector">
+                                v{i + 1} = [{vec.join(', ')}]
                             </div>
                         ))}
                     </div>
