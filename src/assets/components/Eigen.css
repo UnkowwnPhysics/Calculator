@@ -11,7 +11,7 @@
     text-align: center;
 }
 
-/* Botão de voltar */
+/* Botão voltar */
 .back-button {
     position: absolute;
     top: 20px;
@@ -31,7 +31,7 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Seções principais */
+/* Seções */
 .input-section,
 .history-section,
 .examples-section,
@@ -48,9 +48,11 @@
     color: white;
 }
 
-/* Inputs */
+/* Textarea corrigido */
 .input-section textarea {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 12px;
     border: none;
     border-radius: 10px;
@@ -66,7 +68,7 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Botão principal de calcular */
+/* Botão calcular */
 .input-section button {
     width: 100%;
     padding: 14px;
@@ -85,7 +87,7 @@
     filter: brightness(1.1);
 }
 
-/* Botões de navegação (History / Examples etc.) */
+/* Botões extras */
 .action-buttons {
     display: flex;
     justify-content: center;
@@ -109,7 +111,7 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Históricos e exemplos */
+/* Históricos / exemplos */
 .history-item,
 .example-card {
     padding: 10px;
@@ -130,12 +132,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
-}
-
-/* Exemplo */
-.example-card h4 {
-    margin: 0 0 10px 0;
-    color: #6c63ff;
 }
 
 /* Resultados */
@@ -165,7 +161,7 @@
     color: #fed7d7;
 }
 
-/* Responsividade */
+/* Responsivo */
 @media (max-width: 600px) {
     .eigen-calculator {
         padding: 10px;
