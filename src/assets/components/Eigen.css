@@ -1,87 +1,129 @@
-
 .eigen-calculator {
-    max-width: 800px;
-    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
     padding: 20px;
     font-family: Arial, sans-serif;
+    text-align: center;
 }
 
+/* Botão de voltar */
 .back-button {
-    background: #6c757d;
-    color: white;
-    border: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
     padding: 10px 20px;
-    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    color: white;
     cursor: pointer;
-    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s;
+    z-index: 10;
 }
 
 .back-button:hover {
-    background: #545b62;
+    background: rgba(255, 255, 255, 0.3);
 }
 
-.input-section {
+/* Seções principais */
+.input-section,
+.history-section,
+.examples-section,
+.results-section,
+.error-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: white;
 }
 
+/* Inputs */
 .input-section textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
     font-family: monospace;
+    font-size: 1em;
+    outline: none;
     resize: vertical;
 }
 
+.input-section textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Botão principal de calcular */
 .input-section button {
-    background: #007bff;
-    color: white;
+    width: 100%;
+    padding: 14px;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
     cursor: pointer;
+    transition: all 0.2s;
     margin-top: 10px;
 }
 
 .input-section button:hover {
-    background: #0056b3;
+    filter: brightness(1.1);
 }
 
+/* Botões de navegação (History / Examples etc.) */
 .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
     margin-bottom: 20px;
 }
 
 .action-buttons button {
-    background: #28a745;
-    color: white;
-    border: none;
     padding: 8px 16px;
-    border-radius: 5px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
     cursor: pointer;
-    margin-right: 10px;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
 }
 
 .action-buttons button:hover {
-    background: #1e7e34;
+    background: rgba(255, 255, 255, 0.3);
 }
 
-.history-section, .examples-section, .results-section, .error-section {
-    margin-bottom: 30px;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.history-item, .example-card {
+/* Históricos e exemplos */
+.history-item,
+.example-card {
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #eee;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.2s;
+    color: white;
 }
 
-.history-item:hover, .example-card:hover {
-    background-color: #f8f9fa;
+.history-item:hover,
+.example-card:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .examples-grid {
@@ -90,15 +132,13 @@
     gap: 15px;
 }
 
-.example-card {
-    text-align: center;
-}
-
+/* Exemplo */
 .example-card h4 {
     margin: 0 0 10px 0;
-    color: #007bff;
+    color: #6c63ff;
 }
 
+/* Resultados */
 .eigenvalues ul {
     list-style: none;
     padding: 0;
@@ -113,21 +153,24 @@
     font-family: monospace;
     margin: 10px 0;
     padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    color: white;
 }
 
+/* Erros */
 .error-section {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
+    background: rgba(255, 100, 100, 0.2);
+    border: 1px solid #f5c6cb;
+    color: #fed7d7;
 }
 
+/* Responsividade */
 @media (max-width: 600px) {
     .eigen-calculator {
         padding: 10px;
     }
-    
+
     .examples-grid {
         grid-template-columns: 1fr;
     }
