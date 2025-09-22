@@ -4,3 +4,4 @@ pydantic
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
+numpy==1.26.0
