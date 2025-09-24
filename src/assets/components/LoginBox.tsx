@@ -21,7 +21,7 @@ const LoginBox: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://calculator-1-k6dy.onrender.com/login", {
+      const response = await fetch("https://calculator-b9q5.onrender.com/login", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -128,4 +128,5 @@ const LoginBox: React.FC = () => {
 };
 
 export default LoginBox;
+
 
