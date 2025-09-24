@@ -45,41 +45,18 @@ def round_small_values(result, threshold=1e-10):
     return result
 
 # Wrappers para funções trigonométricas com arredondamento
-def safe_sin(x):
-    return round_small_values(math.sin(x))
-
-def safe_cos(x):
-    return round_small_values(math.cos(x))
-
-def safe_tan(x):
-    return round_small_values(math.tan(x))
-
-def safe_asin(x):
-    return round_small_values(math.asin(x))
-
-def safe_acos(x):
-    return round_small_values(math.acos(x))
-
-def safe_atan(x):
-    return round_small_values(math.atan(x))
-
-def safe_sinh(x):
-    return round_small_values(math.sinh(x))
-
-def safe_cosh(x):
-    return round_small_values(math.cosh(x))
-
-def safe_tanh(x):
-    return round_small_values(math.tanh(x))
-
-def safe_csin(x):
-    return round_small_values(cmath.sin(x))
-
-def safe_ccos(x):
-    return round_small_values(cmath.cos(x))
-
-def safe_ctan(x):
-    return round_small_values(cmath.tan(x))
+def safe_sin(x): return round_small_values(math.sin(x))
+def safe_cos(x): return round_small_values(math.cos(x))
+def safe_tan(x): return round_small_values(math.tan(x))
+def safe_asin(x): return round_small_values(math.asin(x))
+def safe_acos(x): return round_small_values(math.acos(x))
+def safe_atan(x): return round_small_values(math.atan(x))
+def safe_sinh(x): return round_small_values(math.sinh(x))
+def safe_cosh(x): return round_small_values(math.cosh(x))
+def safe_tanh(x): return round_small_values(math.tanh(x))
+def safe_csin(x): return round_small_values(cmath.sin(x))
+def safe_ccos(x): return round_small_values(cmath.cos(x))
+def safe_ctan(x): return round_small_values(cmath.tan(x))
 
 # Models
 class LoginRequest(BaseModel):
@@ -91,7 +68,6 @@ class CalculationRequest(BaseModel):
 
 class EigenRequest(BaseModel):
     matrix: str
-
 
 # Funções matemáticas seguras
 def safe_eval(expr: str):
@@ -129,10 +105,22 @@ def safe_eval(expr: str):
     return round_small_values(result)
 
 
-# Endpoints (mantidos iguais)
+# ---------------------------
+# Endpoints
+# ---------------------------
+
 @app.post("/login")
 def login(req: LoginRequest):
-    return {"success": True, "message": "Login successful"}
+    # Aqui devolvemos um token e um objeto user
+    return {
+        "success": True,
+        "message": "Login successful",
+        "token": "dummy-token",   # Aqui no futuro podes gerar JWT
+        "user": {
+            "name": req.email.split("@")[0],  # só exemplo
+            "email": req.email
+        }
+    }
 
 
 @app.post("/calculate")
