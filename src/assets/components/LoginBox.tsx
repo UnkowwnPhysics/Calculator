@@ -9,9 +9,21 @@ const LoginBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Limpar qualquer autenticação prévia ao carregar o componente
+  React.useEffect(() => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Validação básica
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
 
     if (!email.includes("@")) {
       setError("Please enter a valid email address.");
@@ -21,6 +33,8 @@ const LoginBox: React.FC = () => {
     setLoading(true);
 
     try {
+      console.log('Attempting login to:', 'https://calculator-b9q5.onrender.com/login');
+      
       const response = await fetch("https://calculator-b9q5.onrender.com/login", {
         method: "POST",
         headers: { 
@@ -29,21 +43,40 @@ const LoginBox: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('Response status:', response.status);
+      
       const data = await response.json();
+      console.log('Response data:', data);
+      
       setLoading(false);
 
       if (data.success) {
         // Armazena o token de autenticação
-        localStorage.setItem("authToken", data.token || "authenticated");
+        const token = data.token || "authenticated";
+        localStorage.setItem("authToken", token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/dashboard");
+        
+        console.log('Login successful, token stored:', token);
+        console.log('User data stored:', data.user);
+        
+        // Pequeno delay para garantir que o localStorage foi atualizado
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 100);
       } else {
-        setError(data.error || "Login failed.");
+        setError(data.error || "Login failed. Please check your credentials.");
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
-      setError("Server error. Please try again later.");
+      console.error('Login error:', err);
+      setError("Network error. Please check your connection and try again.");
     }
+  };
+
+  // Test login para desenvolvimento
+  const handleTestLogin = () => {
+    setEmail("test@example.com");
+    setPassword("password123");
   };
 
   return (
@@ -53,6 +86,24 @@ const LoginBox: React.FC = () => {
           <h1>Welcome</h1>
           <p>Sign in to access your calculators</p>
         </div>
+        
+        {/* Botão de teste para desenvolvimento */}
+        {process.env.NODE_ENV === 'development' && (
+          <button 
+            onClick={handleTestLogin}
+            style={{
+              marginBottom: '20px',
+              padding: '10px',
+              background: '#666',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Fill Test Credentials
+          </button>
+        )}
         
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
@@ -64,6 +115,7 @@ const LoginBox: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           
@@ -76,6 +128,7 @@ const LoginBox: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           
@@ -99,7 +152,7 @@ const LoginBox: React.FC = () => {
         </div>
 
         <div className="social-login">
-          <button className="social-button google">
+          <button type="button" className="social-button google" disabled={loading}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M16.5 9.20455C16.5 8.56636 16.4455 7.95273 16.3409 7.36364H9V10.845H13.2955C13.1159 11.97 12.4773 12.9232 11.5091 13.5568V15.5636H14.1136C15.6227 14.1682 16.5 11.9318 16.5 9.20455Z" fill="#4285F4"/>
               <path d="M9 17C11.2955 17 13.2409 16.2409 14.6136 14.8636L12.0091 12.8568C11.2409 13.3977 10.2273 13.7386 9 13.7386C6.79545 13.7386 4.95 12.3295 4.25455 10.3545H1.56364V12.4091C2.96818 15.2045 5.77273 17 9 17Z" fill="#34A853"/>
@@ -108,7 +161,7 @@ const LoginBox: React.FC = () => {
             </svg>
             Google
           </button>
-          <button className="social-button microsoft">
+          <button type="button" className="social-button microsoft" disabled={loading}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M0 0H8V8H0V0Z" fill="#F1511B"/>
               <path d="M10 0H18V8H10V0Z" fill="#80CC28"/>
@@ -120,7 +173,7 @@ const LoginBox: React.FC = () => {
         </div>
         
         <div className="login-footer">
-          <p>Don't have an account? <a href="#">Sign up</a></p>
+          <p>Don't have an account? <a href="#" onClick={(e) => e.preventDefault()}>Sign up</a></p>
         </div>
       </div>
     </div>
@@ -128,5 +181,3 @@ const LoginBox: React.FC = () => {
 };
 
 export default LoginBox;
-
-
