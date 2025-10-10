@@ -8,7 +8,7 @@ import ScientificCalculator from './assets/components/ScientificCalculator';
 import Matrix from './assets/components/Matrix'; 
 import QuadraticFormula from './assets/components/QuadraticFormula';
 import Eigen from './assets/components/Eigen';
-import GraphicCalculator from './assets/components/GraphicCalculator';
+
 
 // Verificação de autenticação melhorada
 const isAuthenticated = () => {
@@ -167,14 +167,7 @@ const App: React.FC = () => {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/graphic-calculator" 
-          element={
-            <ProtectedRoute>
-              <GraphicCalculator />
-            </ProtectedRoute>
-          } 
-        />
+
         
         {/* Rota curinga - redireciona para raiz */}
         <Route path="*" element={<Navigate to="/" replace />} />
